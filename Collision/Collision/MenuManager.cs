@@ -19,11 +19,10 @@ namespace Collision
     {
         public SpriteBatch spriteBatch;
 
-        Sprite playNowButton;
+        Button playNowButton;
         Sprite mainMenu;
         Texture2D blackPixel;
-        Rectangle mousePosition;
-        Rectangle playNowButtonPosition;
+        
 
         int time = 1;
         int frameTime = 10;
@@ -41,13 +40,12 @@ namespace Collision
             blackPixel = new Texture2D(Game.GraphicsDevice, 1, 1);
             blackPixel.SetData(new[] { Color.Black });
 
-            mainMenu = new Sprite(Game.Content.Load<Texture2D>(@"Images/Main Menu"),
-                new Vector2(960, 540), new Point(1920, 1080), 0, new Point(0,0),
+            mainMenu = new Sprite(Game.Content.Load<Texture2D>(@"Images/UI/Main Menu"),
+                new Vector2(960, 540), new Point(1920, 1080), new Point(0,0),
                 new Point(1, 2), 0.0f);
-            playNowButton = new Sprite(Game.Content.Load<Texture2D>(@"Images/Playnow"),
-                new Vector2(960, 800), new Point(1147, 411), 0, new Point(0, 0),
+            playNowButton = new Button(Game.Content.Load<Texture2D>(@"Images/UI/Playnow"),
+                new Vector2(960, 800), new Point(1147, 411), new Point(0, 0),
                 new Point(2, 4), 0.0f);
-            playNowButtonPosition = new Rectangle(386, 595, 1148, 412);
 
 
         }
@@ -69,23 +67,20 @@ namespace Collision
         /// <param name="gameTime">Provides a snapshot of timing values.</param>
         public override void Update(GameTime gameTime)
         {
-            MouseState mouseState = Mouse.GetState();
-            mousePosition = new Rectangle(mouseState.X, mouseState.Y, 5, 5);
-
             if (((Game1)Game).menuActive)
             {
-                if (mousePosition.Intersects(playNowButtonPosition) && mouseState.LeftButton == ButtonState.Pressed)
+                if (playNowButton.buttonPressed)
                     ((Game1)Game).menuActive = false;
             }
             if (((Game1)Game).gameOver)
             {
                 mainMenu.currentFrame.Y = 1;
                 playNowButton.currentFrame.X = 1;
-                if (mousePosition.Intersects(playNowButtonPosition) && mouseState.LeftButton == ButtonState.Pressed)
+                if (playNowButton.buttonPressed)
                     ((Game1)Game).gameOver = false;
             }
 
-            if (!mousePosition.Intersects(playNowButtonPosition) && time % frameTime == frameTime - 1)
+            if (!playNowButton.buttonHovered && time % frameTime == frameTime - 1)
             {
                 playNowButton.currentFrame.Y = ((playNowButton.currentFrame.Y + 1) % 4);
                 time = 0;

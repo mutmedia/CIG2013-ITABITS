@@ -18,6 +18,7 @@ namespace Collision
     public class SpriteManager : Microsoft.Xna.Framework.DrawableGameComponent
     {
         public SpriteBatch spriteBatch;
+        int time = 0;
         
         Player player;
 
@@ -33,6 +34,12 @@ namespace Collision
         public Sword jedi;
         public Sword piroca;
         int currentSwordNum = 0;
+
+        public Sprite levelSpriteUnit;
+        public Sprite levelSpriteDecimal;
+        public Sprite levelUpSprite;
+        public bool startLevelUpAnimation = false;
+        public int levelupAnimationFrameTime = 4;
                 
         public bool playerCanMove = true;
 
@@ -41,8 +48,8 @@ namespace Collision
         List<Sprite> bloodList = new List<Sprite>();
 
         //ENEMY INFO
-        int enemySpawnMin = 1000;
-        int enemySpawnMax = 1000;
+        int enemySpawnMin = 10;
+        int enemySpawnMax = 15;
         const int ENEMY_HEALTHBAR_HEIGHT = 10;
         //OGRE
             const int OGRESPEED = 6;
@@ -57,7 +64,7 @@ namespace Collision
          * de vida eh 10 */
 
         //PLAYER INFO
-            const int PLAYERTOTALHP = 1000000;
+            const int PLAYERTOTALHP = 10000;
             const int XPTOLEVEL1 = 5;
 
         int nextSpawnNumber = 0;
@@ -152,12 +159,12 @@ namespace Collision
 
                 if (distance_between_points(enemy.GetPosition, currentSword.collisionPoint_middle) <= 64 && currentSword.getIsAttacking)
                 {
-                    enemy.hp -= galho.midDamage;
+                    enemy.hp -= currentSword.midDamage;
                 }
 
                 if (distance_between_points(enemy.GetPosition, currentSword.collisionPoint_tip) <= 64 && currentSword.getIsAttacking)
                 {
-                    enemy.hp -= galho.tipDamage;
+                    enemy.hp -= currentSword.tipDamage;
                 }
                 if (distance_between_points(enemy.GetPosition, player.GetPosition) <= player.frameSize.X + enemy.frameSize.X/2 && enemy.GetIsAttacking)
                 {
@@ -167,8 +174,8 @@ namespace Collision
                 if (enemy.hp <= 0)
                 {
                     bloodList.Add(new Sprite(Game.Content.Load<Texture2D>(@"Images/sangue"), enemyList[i].GetPosition,
-                        new Point(128, 128), 0, new Point(0, 0), new Point(1, 1), Vector2.Zero, ((Game1)Game).rnd.Next()));
-                    if (bloodList.Count() % 20 == 19)
+                        new Point(128, 128), new Point(0, 0), new Point(1, 1), Vector2.Zero, ((Game1)Game).rnd.Next()));
+                    if (bloodList.Count() % 2000 == 1999)
                         bloodList.RemoveAt(0);
                     enemyList.RemoveAt(i);
                     enemyHealthBarList.RemoveAt(i);
@@ -201,6 +208,9 @@ namespace Collision
                     enemyList.RemoveAt(i);
                     enemyHealthBarList.RemoveAt(i);
                 }
+                enemySpawnMin = 10;
+                enemySpawnMax = 15;
+                player.level = 0;
                 player.xp = 0;
                 player.xpToNextLevel = XPTOLEVEL1;
                 player.totalhp = PLAYERTOTALHP;
@@ -223,7 +233,9 @@ namespace Collision
                 player.hp = player.totalhp;
                 if (player.level % 5 == 0 && player.level < 40)
                     currentSwordNum++;
-
+                startLevelUpAnimation = true;
+                if (startLevelUpAnimation)
+                    player.hp = player.totalhp;
             }
 
             playerXpBar.barPercentage = (float)player.xp / (float)player.xpToNextLevel;
@@ -257,6 +269,31 @@ namespace Collision
             }
         }
 
+        public void UpdateLevelSprite()
+        {
+            levelSpriteUnit.currentFrame.X = player.level % 10;
+            levelSpriteDecimal.currentFrame.X = (int)(player.level / 10);
+        }
+
+        public void LevelUpAnimationUpdate()
+        {
+            levelUpSprite.position = player.GetPosition;
+            if (startLevelUpAnimation && time % levelupAnimationFrameTime == 0)
+            {
+                
+                levelUpSprite.currentFrame.X = (levelUpSprite.currentFrame.X + 1) % levelUpSprite.sheetSize.X;
+                if (levelUpSprite.currentFrame.X == 0)
+                {
+                    levelUpSprite.currentFrame.Y = (levelUpSprite.currentFrame.Y + 1) % levelUpSprite.sheetSize.Y;
+                    if (levelUpSprite.currentFrame.Y == 0)
+                    {
+                        startLevelUpAnimation = false;
+                        levelUpSprite.currentFrame = new Point(0,0);
+                    }
+                }
+            }
+        }
+
         protected override void LoadContent()
         {
             spriteBatch = new SpriteBatch(Game.GraphicsDevice);
@@ -270,41 +307,52 @@ namespace Collision
             Texture2D espada_texture = Game.Content.Load<Texture2D>(@"Images/sword/espada");
             Texture2D jedi_texture = Game.Content.Load<Texture2D>(@"Images/sword/jedi");
             Texture2D piroca_texture = Game.Content.Load<Texture2D>(@"Images/sword/piroca");
+            Texture2D number_texture = Game.Content.Load<Texture2D>(@"Images/UI/numberz");
+            Texture2D levelup_texture = Game.Content.Load<Texture2D>(@"Images/levelup");
 
             player = new Player(
                 player_texture,
-                new Vector2((int)960, (int)540), new Point(player_texture.Width, player_texture.Height), 1, new Point(0, 0),
+                new Vector2((int)960, (int)540), new Point(player_texture.Width, player_texture.Height), new Point(0, 0),
                 new Point(1, 1), 0.0f, PLAYERTOTALHP, PLAYERTOTALHP, 0, XPTOLEVEL1, this);
 
             galho = new Sword(
-                galho_texture, Vector2.Zero, new Point(galho_texture.Width, galho_texture.Height), 0, new Point(0, 0),
+                galho_texture, Vector2.Zero, new Point(galho_texture.Width, galho_texture.Height), new Point(0, 0),
                 new Point(1, 1), 0, 1, 2, this);
             cano = new Sword(
-                cano_texture, Vector2.Zero, new Point(cano_texture.Width, cano_texture.Height), 0, new Point(0, 0),
+                cano_texture, Vector2.Zero, new Point(cano_texture.Width, cano_texture.Height), new Point(0, 0),
                 new Point(1, 1), 0, 3, 4, this);
             crayon = new Sword(
-                crayon_texture, Vector2.Zero, new Point(crayon_texture.Width, crayon_texture.Height), 0, new Point(0, 0),
+                crayon_texture, Vector2.Zero, new Point(crayon_texture.Width, crayon_texture.Height), new Point(0, 0),
                 new Point(1, 1), 0, 5, 6, this);
             lampada = new Sword(
-                lampada_texture, Vector2.Zero, new Point(lampada_texture.Width, lampada_texture.Height), 0, new Point(0, 0),
+                lampada_texture, Vector2.Zero, new Point(lampada_texture.Width, lampada_texture.Height), new Point(0, 0),
                 new Point(1, 1), 0, 7, 8, this);
             serra = new Sword(
-                serra_texture, Vector2.Zero, new Point(serra_texture.Width, serra_texture.Height), 0, new Point(0, 0),
+                serra_texture, Vector2.Zero, new Point(serra_texture.Width, serra_texture.Height), new Point(0, 0),
                 new Point(1, 1), 0, 9, 10, this);
             espada = new Sword(
-                espada_texture, Vector2.Zero, new Point(espada_texture.Width, espada_texture.Height), 0, new Point(0, 0),
+                espada_texture, Vector2.Zero, new Point(espada_texture.Width, espada_texture.Height), new Point(0, 0),
                 new Point(1, 1), 0, 11, 12, this);
             jedi = new Sword(
-                jedi_texture, Vector2.Zero, new Point(jedi_texture.Width, jedi_texture.Height), 0, new Point(0, 0),
+                jedi_texture, Vector2.Zero, new Point(jedi_texture.Width, jedi_texture.Height), new Point(0, 0),
                 new Point(1, 1), 0, 13, 14, this);
             piroca = new Sword(
-                piroca_texture, Vector2.Zero, new Point(piroca_texture.Width, piroca_texture.Height), 0, new Point(0, 0),
+                piroca_texture, Vector2.Zero, new Point(piroca_texture.Width, piroca_texture.Height), new Point(0, 0),
                 new Point(1, 1), 0, 15, 16, this);
 
-            playerHealthBar = new Bar(new Vector2(20, 50), 60, 500, 1, Color.Red, Color.DarkRed, 1.0f);
-            playerXpBar = new Bar(new Vector2(1400, 50), 60, 500, 1, Color.Green, Color.DarkGreen, 1.0f);
+            levelSpriteUnit = new Sprite(number_texture, new Vector2(1350, 80), new Point(number_texture.Width/10, number_texture.Height),
+                new Point(0, 0), new Point(10, 1), 0.0f);
+            levelSpriteDecimal = new Sprite(number_texture, new Vector2(1300, 80), new Point(number_texture.Width/10, number_texture.Height),
+                new Point(0, 0), new Point(10, 1), 0.0f);
+
+            levelUpSprite = new Sprite(levelup_texture, Vector2.Zero, new Point(levelup_texture.Width / 5, levelup_texture.Height / 6),
+                new Point(0, 0), new Point(5, 6), 0.0f);
+
+            playerHealthBar = new Bar(new Vector2(20, 50), 60, 500, 1, Color.Red, Color.DarkRed, 1.3f);
+            playerXpBar = new Bar(new Vector2(1400, 50), 60, 500, 1, Color.Green, Color.DarkGreen, 1.3f);
 
         }
+
 
         /// <summary>
         /// Allows the game component to perform any initialization it needs to before starting
@@ -326,6 +374,8 @@ namespace Collision
             if (!((Game1)Game).menuActive && !((Game1)Game).gameOver)
             {
                 // TODO: Add your update code here
+                time++;
+                
                 player.Update(gameTime, Game.Window.ClientBounds);
 
                 currentSword.Update(gameTime, Game.Window.ClientBounds);
@@ -336,8 +386,13 @@ namespace Collision
 
                 PlayerLevelUpdate();
 
+                UpdateLevelSprite();
+
+                LevelUpAnimationUpdate();
+
                 if (player.hp <= 0)
                     ((Game1)Game).gameOver = true;
+
 
                 base.Update(gameTime);
             }
@@ -370,7 +425,12 @@ namespace Collision
                 playerHealthBar.Draw(gameTime, spriteBatch, Game.GraphicsDevice);
 
                 playerXpBar.Draw(gameTime, spriteBatch, Game.GraphicsDevice);
-                
+
+                if(startLevelUpAnimation)
+                    levelUpSprite.Draw(gameTime, spriteBatch);
+
+                levelSpriteUnit.Draw(gameTime, spriteBatch);
+                levelSpriteDecimal.Draw(gameTime, spriteBatch);
             }
 
             base.Draw(gameTime);

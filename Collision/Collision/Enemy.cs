@@ -24,7 +24,7 @@ namespace Collision
         public Enemy(Texture2D textureImage, Vector2 position, Point frameSize,
             int collisionOffset, Point currentFrame, Point sheetSize,
             Vector2 speed, float angle, int totalhp, int hp, int attackSpeed, int attackRange, int damage, int xp, SpriteManager spriteManager)
-            : base(textureImage, position, frameSize, collisionOffset, currentFrame, sheetSize, speed, angle)
+            : base(textureImage, position, frameSize, currentFrame, sheetSize, speed, angle)
         {
             this.spriteManager = spriteManager;
             this.totalhp = totalhp;

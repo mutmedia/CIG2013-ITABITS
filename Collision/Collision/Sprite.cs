@@ -14,33 +14,30 @@ namespace Collision
         protected Texture2D textureImage;
         public Point frameSize;
         public Point currentFrame;
-        Point sheetSize;
-        int collisionOffset;
+        public Point sheetSize;
         int timeSinceLastFrame = 0;
         const int defaultMillisecondsPerFrame = 100000000;
         protected Vector2 speed;
-        protected Vector2 position;
+        public Vector2 position;
         protected float angle;
 
-        public Sprite(Texture2D textureImage, Vector2 position, Point frameSize, int collisionOffset, Point currentFrame, Point sheetSize, Vector2 speed, float angle)
+        public Sprite(Texture2D textureImage, Vector2 position, Point frameSize, Point currentFrame, Point sheetSize, Vector2 speed, float angle)
         {
             this.textureImage = textureImage;
             this.position = position;
             this.frameSize = frameSize;
-            this.collisionOffset = collisionOffset;
             this.currentFrame = currentFrame;
             this.sheetSize = sheetSize;
             this.speed = speed;
             this.angle = angle;
         }
 
-        public Sprite(Texture2D textureImage, Vector2 position, Point frameSize, int collisionOffset, Point currentFrame, Point sheetSize, float angle)
+        public Sprite(Texture2D textureImage, Vector2 position, Point frameSize, Point currentFrame, Point sheetSize, float angle)
         {
             // TODO: Complete member initialization
             this.textureImage = textureImage;
             this.position = position;
             this.frameSize = frameSize;
-            this.collisionOffset = collisionOffset;
             this.currentFrame = currentFrame;
             this.sheetSize = sheetSize;
             this.angle = angle;

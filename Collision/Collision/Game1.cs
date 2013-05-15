@@ -20,6 +20,7 @@ namespace Collision
         GraphicsDeviceManager graphics;
         SpriteBatch spriteBatch;
         SpriteManager spriteManager;
+        SpriteManager spriteManager2;
         MenuManager menuManager;
         public bool menuActive = true;
         public bool gameOver = false;
@@ -53,10 +54,12 @@ namespace Collision
             // TODO: Add your initialization logic here
 
             spriteManager = new SpriteManager(this);
+            spriteManager2 = new SpriteManager(this);
             menuManager = new MenuManager(this);
 
 
             Components.Add(spriteManager);
+            Components.Add(spriteManager2);
             Components.Add(menuManager);
 
             base.Initialize();

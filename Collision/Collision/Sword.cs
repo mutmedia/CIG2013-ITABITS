@@ -21,8 +21,8 @@ namespace Collision
         public int midDamage;
 
         public Sword(Texture2D textureImage, Vector2 position, Point frameSize,
-            int collisionOffset, Point currentFrame, Point sheetSize, float angle, int tipDamage, int midDamage, SpriteManager spriteManager)
-            : base(textureImage, position, frameSize, collisionOffset, currentFrame, sheetSize, angle)
+            Point currentFrame, Point sheetSize, float angle, int tipDamage, int midDamage, SpriteManager spriteManager)
+            : base(textureImage, position, frameSize, currentFrame, sheetSize, angle)
         {
             this.spriteManager = spriteManager;
             this.midDamage = midDamage;

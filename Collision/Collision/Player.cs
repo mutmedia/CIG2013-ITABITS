@@ -20,9 +20,9 @@ namespace Collision
         SpriteManager spriteManager;
         
         public Player(Texture2D textureImage, Vector2 position, Point frameSize,
-            int collisionOffset, Point currentFrame, Point sheetSize,
-            float angle, int totalhp, int hp, int xp, int xpToNextLevel, SpriteManager spriteManager)
-            : base(textureImage, position, frameSize, collisionOffset, currentFrame, sheetSize, angle)
+            Point currentFrame, Point sheetSize, float angle, int totalhp, int hp,
+            int xp, int xpToNextLevel, SpriteManager spriteManager)
+            : base(textureImage, position, frameSize, currentFrame, sheetSize, angle)
         {
             this.totalhp = totalhp;
             this.hp = hp;
