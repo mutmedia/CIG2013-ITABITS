@@ -22,6 +22,7 @@ namespace Collision
         SpriteManager spriteManager;
         MenuManager menuManager;
         public bool menuActive = true;
+        public bool gameOver = false;
 
         public Random rnd { get; private set; }
               

@@ -11,20 +11,22 @@ using Microsoft.Xna.Framework.Media;
 
 namespace Collision
 {
-    class Sword : Sprite
+    public class Sword : Sprite
     {
         SpriteManager spriteManager;
         bool isAttacking = false;
         int attackcounter = 0;
-        static int attackspeed = 30; //the lower the faster
-        public int tipDamage = 1;
-        public int midDamage = 2;
+        static int attackspeed = 20; //the lower the faster
+        public int tipDamage;
+        public int midDamage;
 
         public Sword(Texture2D textureImage, Vector2 position, Point frameSize,
-            int collisionOffset, Point currentFrame, Point sheetSize, float angle, SpriteManager spriteManager)
+            int collisionOffset, Point currentFrame, Point sheetSize, float angle, int tipDamage, int midDamage, SpriteManager spriteManager)
             : base(textureImage, position, frameSize, collisionOffset, currentFrame, sheetSize, angle)
         {
             this.spriteManager = spriteManager;
+            this.midDamage = midDamage;
+            this.tipDamage = tipDamage;
         }
 
         public void Update(GameTime gameTime, Rectangle clientBounds)
@@ -85,7 +87,7 @@ namespace Collision
         {
             spriteBatch.Draw(textureImage, position,
                 new Rectangle(currentFrame.X * frameSize.X, currentFrame.Y * frameSize.Y,
-                    frameSize.X, frameSize.Y), Color.White, angle, new Vector2(frameSize.X / 2, frameSize.Y), 1f, SpriteEffects.None, 0);
+                    frameSize.X, frameSize.Y), Color.White, angle, new Vector2(frameSize.X / 2, frameSize.Y), 1f, SpriteEffects.None, 1);
         }
     }
 }

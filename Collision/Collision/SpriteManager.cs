@@ -18,20 +18,34 @@ namespace Collision
     public class SpriteManager : Microsoft.Xna.Framework.DrawableGameComponent
     {
         public SpriteBatch spriteBatch;
+        
         Player player;
+
         Bar playerHealthBar;
         Bar playerXpBar;
-        Sword sword;
+
+        public Sword galho;
+        public Sword cano;
+        public Sword crayon;
+        public Sword lampada;
+        public Sword serra;
+        public Sword espada;
+        public Sword jedi;
+        public Sword piroca;
+        int currentSwordNum = 0;
+                
+        public bool playerCanMove = true;
 
         List<Enemy> enemyList = new List<Enemy>();
         List<Bar> enemyHealthBarList = new List<Bar>();
+        List<Sprite> bloodList = new List<Sprite>();
 
         //ENEMY INFO
-        int enemySpawnMin = 5;
-        int enemySpawnMax = 10;
+        int enemySpawnMin = 1000;
+        int enemySpawnMax = 1000;
         const int ENEMY_HEALTHBAR_HEIGHT = 10;
         //OGRE
-            const int OGRESPEED = 3;
+            const int OGRESPEED = 6;
             const int OGREATTACKSPEED = 50;
             const int OGRELIFE = 20;
             const int OGREATTACKRANGE = 16;
@@ -43,7 +57,7 @@ namespace Collision
          * de vida eh 10 */
 
         //PLAYER INFO
-            const int PLAYERTOTALHP = 100;
+            const int PLAYERTOTALHP = 1000000;
             const int XPTOLEVEL1 = 5;
 
         int nextSpawnNumber = 0;
@@ -81,8 +95,6 @@ namespace Collision
         {
             return (float)player.hp / (float)player.totalhp;
         }
-
-
 
         private void SpawnOgre()
         {
@@ -136,22 +148,28 @@ namespace Collision
                 Enemy enemy = enemyList[i];
                 Bar enemyHealthBar = enemyHealthBarList[i];
                 Vector2 position = enemy.GetPosition;
+                
 
-                if (distance_between_points(enemy.GetPosition, sword.collisionPoint_middle) <= 64 && sword.getIsAttacking)
+                if (distance_between_points(enemy.GetPosition, currentSword.collisionPoint_middle) <= 64 && currentSword.getIsAttacking)
                 {
-                    enemy.hp -= sword.midDamage;
+                    enemy.hp -= galho.midDamage;
                 }
 
-                if (distance_between_points(enemy.GetPosition, sword.collisionPoint_tip) <= 64 && sword.getIsAttacking)
+                if (distance_between_points(enemy.GetPosition, currentSword.collisionPoint_tip) <= 64 && currentSword.getIsAttacking)
                 {
-                    enemy.hp -= sword.tipDamage;
+                    enemy.hp -= galho.tipDamage;
                 }
                 if (distance_between_points(enemy.GetPosition, player.GetPosition) <= player.frameSize.X + enemy.frameSize.X/2 && enemy.GetIsAttacking)
                 {
                     player.hp -= enemy.damage;
                 }
+
                 if (enemy.hp <= 0)
                 {
+                    bloodList.Add(new Sprite(Game.Content.Load<Texture2D>(@"Images/sangue"), enemyList[i].GetPosition,
+                        new Point(128, 128), 0, new Point(0, 0), new Point(1, 1), Vector2.Zero, ((Game1)Game).rnd.Next()));
+                    if (bloodList.Count() % 20 == 19)
+                        bloodList.RemoveAt(0);
                     enemyList.RemoveAt(i);
                     enemyHealthBarList.RemoveAt(i);
                     i--;
@@ -164,7 +182,6 @@ namespace Collision
                 enemyHealthBar.barPercentage = ((float)enemy.hp) / ((float)enemy.totalhp);
                   
             }
-            
 
             if (enemyList.Count == 0)
             {
@@ -175,7 +192,25 @@ namespace Collision
             }
         }
 
-        public void playerLevelUpdate()
+        public void GameOverUpdate()
+        {
+            if (((Game1)Game).gameOver)
+            {
+                for (int i = 0; i < enemyList.Count; i++)
+                {
+                    enemyList.RemoveAt(i);
+                    enemyHealthBarList.RemoveAt(i);
+                }
+                player.xp = 0;
+                player.xpToNextLevel = XPTOLEVEL1;
+                player.totalhp = PLAYERTOTALHP;
+                galho.midDamage = 2;
+                galho.tipDamage = 1;
+                player.hp = player.totalhp;
+            }
+        }
+
+        public void PlayerLevelUpdate()
         {
             Bar xpBar = playerXpBar;
 
@@ -184,33 +219,90 @@ namespace Collision
                 player.xp -= player.xpToNextLevel;
                 player.xpToNextLevel += 5;
                 player.totalhp += 10;
-                sword.midDamage++;
-                sword.tipDamage++;
+                player.level++;
                 player.hp = player.totalhp;
+                if (player.level % 5 == 0 && player.level < 40)
+                    currentSwordNum++;
+
             }
 
             playerXpBar.barPercentage = (float)player.xp / (float)player.xpToNextLevel;
+        }
+
+        public Sword currentSword
+        {
+            get
+            {
+                switch (currentSwordNum % 8)
+                {
+                    case 0:
+                        return galho;
+                    case 1:
+                        return cano;
+                    case 2:
+                        return crayon;
+                    case 3:
+                        return lampada;
+                    case 4:
+                        return serra;
+                    case 5:
+                        return espada;
+                    case 6:
+                        return jedi;
+                    case 7:
+                        return piroca;
+                    default:
+                        return null;
+                }
+            }
         }
 
         protected override void LoadContent()
         {
             spriteBatch = new SpriteBatch(Game.GraphicsDevice);
 
-            player = new Player(
-                Game.Content.Load<Texture2D>(@"Images/character"),
-                new Vector2((int)960, (int)540), new Point(128, 128), 1, new Point(0, 0),
-                new Point(1, 1), 0.0f, PLAYERTOTALHP, PLAYERTOTALHP, 0, XPTOLEVEL1);
-            
-            Texture2D sword_texture = Game.Content.Load<Texture2D>(@"Images/sword");
+            Texture2D player_texture = Game.Content.Load<Texture2D>(@"Images/character");
+            Texture2D galho_texture = Game.Content.Load<Texture2D>(@"Images/sword/galho");
+            Texture2D cano_texture = Game.Content.Load<Texture2D>(@"Images/sword/cano");
+            Texture2D crayon_texture = Game.Content.Load<Texture2D>(@"Images/sword/crayon");
+            Texture2D lampada_texture = Game.Content.Load<Texture2D>(@"Images/sword/lampada (melhorar)");
+            Texture2D serra_texture = Game.Content.Load<Texture2D>(@"Images/sword/serra");
+            Texture2D espada_texture = Game.Content.Load<Texture2D>(@"Images/sword/espada");
+            Texture2D jedi_texture = Game.Content.Load<Texture2D>(@"Images/sword/jedi");
+            Texture2D piroca_texture = Game.Content.Load<Texture2D>(@"Images/sword/piroca");
 
-            sword = new Sword(
-                sword_texture, Vector2.Zero, new Point(sword_texture.Width, sword_texture.Height), 0, new Point(0, 0),
-                new Point(1, 1), 0, this);
+            player = new Player(
+                player_texture,
+                new Vector2((int)960, (int)540), new Point(player_texture.Width, player_texture.Height), 1, new Point(0, 0),
+                new Point(1, 1), 0.0f, PLAYERTOTALHP, PLAYERTOTALHP, 0, XPTOLEVEL1, this);
+
+            galho = new Sword(
+                galho_texture, Vector2.Zero, new Point(galho_texture.Width, galho_texture.Height), 0, new Point(0, 0),
+                new Point(1, 1), 0, 1, 2, this);
+            cano = new Sword(
+                cano_texture, Vector2.Zero, new Point(cano_texture.Width, cano_texture.Height), 0, new Point(0, 0),
+                new Point(1, 1), 0, 3, 4, this);
+            crayon = new Sword(
+                crayon_texture, Vector2.Zero, new Point(crayon_texture.Width, crayon_texture.Height), 0, new Point(0, 0),
+                new Point(1, 1), 0, 5, 6, this);
+            lampada = new Sword(
+                lampada_texture, Vector2.Zero, new Point(lampada_texture.Width, lampada_texture.Height), 0, new Point(0, 0),
+                new Point(1, 1), 0, 7, 8, this);
+            serra = new Sword(
+                serra_texture, Vector2.Zero, new Point(serra_texture.Width, serra_texture.Height), 0, new Point(0, 0),
+                new Point(1, 1), 0, 9, 10, this);
+            espada = new Sword(
+                espada_texture, Vector2.Zero, new Point(espada_texture.Width, espada_texture.Height), 0, new Point(0, 0),
+                new Point(1, 1), 0, 11, 12, this);
+            jedi = new Sword(
+                jedi_texture, Vector2.Zero, new Point(jedi_texture.Width, jedi_texture.Height), 0, new Point(0, 0),
+                new Point(1, 1), 0, 13, 14, this);
+            piroca = new Sword(
+                piroca_texture, Vector2.Zero, new Point(piroca_texture.Width, piroca_texture.Height), 0, new Point(0, 0),
+                new Point(1, 1), 0, 15, 16, this);
 
             playerHealthBar = new Bar(new Vector2(20, 50), 60, 500, 1, Color.Red, Color.DarkRed, 1.0f);
-
             playerXpBar = new Bar(new Vector2(1400, 50), 60, 500, 1, Color.Green, Color.DarkGreen, 1.0f);
-
 
         }
 
@@ -222,11 +314,8 @@ namespace Collision
         {
             // TODO: Add your initialization code here
             ResetSpawnNumber();
-        
             base.Initialize();
         }
-
-        
 
         /// <summary>
         /// Allows the game component to update itself.
@@ -234,38 +323,45 @@ namespace Collision
         /// <param name="gameTime">Provides a snapshot of timing values.</param>
         public override void Update(GameTime gameTime)
         {
-            if(!((Game1)Game).menuActive)
+            if (!((Game1)Game).menuActive && !((Game1)Game).gameOver)
             {
                 // TODO: Add your update code here
                 player.Update(gameTime, Game.Window.ClientBounds);
 
-                sword.Update(gameTime, Game.Window.ClientBounds);
+                currentSword.Update(gameTime, Game.Window.ClientBounds);
 
                 updateEnemyInteraction(gameTime);
 
                 playerHealthBar.barPercentage = GetPlayerHpPercentage();
 
-                playerLevelUpdate();
+                PlayerLevelUpdate();
 
                 if (player.hp <= 0)
-                    Game.Exit();
+                    ((Game1)Game).gameOver = true;
 
                 base.Update(gameTime);
+            }
+            else
+            {
+                GameOverUpdate();
             }
         }
 
         public override void Draw(GameTime gameTime)
         {
-            if (!((Game1)Game).menuActive)
+            spriteBatch.Begin(SpriteSortMode.FrontToBack, BlendState.AlphaBlend);
+            
+            if (!((Game1)Game).menuActive && !((Game1)Game).gameOver)
             {
-
-                spriteBatch.Begin(SpriteSortMode.FrontToBack, BlendState.AlphaBlend);
 
                 player.Draw(gameTime, spriteBatch);
 
-                sword.Draw(gameTime, spriteBatch);
+                currentSword.Draw(gameTime, spriteBatch);
 
                 foreach (Sprite s in enemyList)
+                    s.Draw(gameTime, spriteBatch);
+
+                foreach (Sprite s in bloodList)
                     s.Draw(gameTime, spriteBatch);
 
                 foreach (Bar b in enemyHealthBarList)
@@ -274,10 +370,12 @@ namespace Collision
                 playerHealthBar.Draw(gameTime, spriteBatch, Game.GraphicsDevice);
 
                 playerXpBar.Draw(gameTime, spriteBatch, Game.GraphicsDevice);
-
-                spriteBatch.End();
-                base.Draw(gameTime);
+                
             }
+
+            base.Draw(gameTime);
+
+            spriteBatch.End();
         }
     }
 }

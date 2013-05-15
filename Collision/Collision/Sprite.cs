@@ -9,7 +9,7 @@ using Microsoft.Xna.Framework.Graphics;
 
 namespace Collision
 {
-    class Sprite //maior bizu ( so que LEU) do codigo
+    public class Sprite //maior bizu ( so que LEU) do codigo
     {
         protected Texture2D textureImage;
         public Point frameSize;

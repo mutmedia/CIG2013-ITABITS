@@ -123,5 +123,14 @@ namespace Collision
 
            attackCounter++;
         }
+
+        public override void Draw(GameTime gameTime, SpriteBatch spriteBatch)
+        {
+            spriteBatch.Draw(textureImage, position,
+                new Rectangle(currentFrame.X * frameSize.X, currentFrame.Y * frameSize.Y,
+                    frameSize.X, frameSize.Y), Color.White, angle, new Vector2(frameSize.X / 2, frameSize.Y / 2), 1f, SpriteEffects.None, 0.5f);
+        }
     }
+
+
 }
