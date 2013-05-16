@@ -14,6 +14,7 @@ namespace Collision
         public int totalhp;
         public int hp;
         bool isAttacking = false;
+        bool isFollowing = false;
         int attackCounter = 0;
         int attackSpeed;
         int attackRange;
@@ -23,8 +24,8 @@ namespace Collision
         
         public Enemy(Texture2D textureImage, Vector2 position, Point frameSize,
             int collisionOffset, Point currentFrame, Point sheetSize,
-            Vector2 speed, float angle, int totalhp, int hp, int attackSpeed, int attackRange, int damage, int xp, SpriteManager spriteManager)
-            : base(textureImage, position, frameSize, currentFrame, sheetSize, speed, angle)
+            Vector2 speed, float angle, int totalhp, int hp, int attackSpeed, int attackRange, int damage, int xp, float depth, SpriteManager spriteManager)
+            : base(textureImage, position, frameSize, currentFrame, sheetSize, speed, angle, depth)
         {
             this.spriteManager = spriteManager;
             this.totalhp = totalhp;
@@ -65,16 +66,19 @@ namespace Collision
             //andar quando no campo de visao e parar quando muito perto
             
            float player_distance = (float)Math.Sqrt((player.X - position.X) * (player.X - position.X) + (player.Y - position.Y) * (player.Y - position.Y));
+
+
+           if (player_distance < FOV)
+               isFollowing = true;
             
-          
-           if (player_distance < FOV && player_distance > 64 + frameSize.X/2 + 2 && !isAttacking)
+           if (isFollowing && player_distance > 64 + frameSize.X/2 + 2 && !isAttacking)
            {
                 if(position.Y < player.Y)
                       position.Y += direction.Y;
 
                 if(position.Y > player.Y) 
                       position.Y -= direction.Y;
-                
+                                       
                 if(position.X < player.X)
                      position.X += direction.X;
 

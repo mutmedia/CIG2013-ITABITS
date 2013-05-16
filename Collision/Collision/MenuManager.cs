@@ -42,10 +42,10 @@ namespace Collision
 
             mainMenu = new Sprite(Game.Content.Load<Texture2D>(@"Images/UI/Main Menu"),
                 new Vector2(960, 540), new Point(1920, 1080), new Point(0,0),
-                new Point(1, 2), 0.0f);
+                new Point(1, 2), 0.0f, 1f);
             playNowButton = new Button(Game.Content.Load<Texture2D>(@"Images/UI/Playnow"),
                 new Vector2(960, 800), new Point(1147, 411), new Point(0, 0),
-                new Point(2, 4), 0.0f);
+                new Point(2, 4), 0.0f, 1f);
 
 
         }
@@ -85,7 +85,6 @@ namespace Collision
                 playNowButton.currentFrame.Y = ((playNowButton.currentFrame.Y + 1) % 4);
                 time = 0;
             }
-
 
             time++;
 

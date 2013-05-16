@@ -15,13 +15,12 @@ namespace Collision
         public Point frameSize;
         public Point currentFrame;
         public Point sheetSize;
-        int timeSinceLastFrame = 0;
-        const int defaultMillisecondsPerFrame = 100000000;
         protected Vector2 speed;
         public Vector2 position;
         protected float angle;
+        public float depth;
 
-        public Sprite(Texture2D textureImage, Vector2 position, Point frameSize, Point currentFrame, Point sheetSize, Vector2 speed, float angle)
+        public Sprite(Texture2D textureImage, Vector2 position, Point frameSize, Point currentFrame, Point sheetSize, Vector2 speed, float angle, float depth)
         {
             this.textureImage = textureImage;
             this.position = position;
@@ -30,9 +29,10 @@ namespace Collision
             this.sheetSize = sheetSize;
             this.speed = speed;
             this.angle = angle;
+            this.depth = depth;
         }
 
-        public Sprite(Texture2D textureImage, Vector2 position, Point frameSize, Point currentFrame, Point sheetSize, float angle)
+        public Sprite(Texture2D textureImage, Vector2 position, Point frameSize, Point currentFrame, Point sheetSize, float angle, float depth)
         {
             // TODO: Complete member initialization
             this.textureImage = textureImage;
@@ -41,6 +41,7 @@ namespace Collision
             this.currentFrame = currentFrame;
             this.sheetSize = sheetSize;
             this.angle = angle;
+            this.depth = depth;
         }
 
         public bool IsOutOfBounds(Rectangle clientRect)
@@ -57,7 +58,7 @@ namespace Collision
         {
             spriteBatch.Draw(textureImage, position,
                 new Rectangle(currentFrame.X * frameSize.X, currentFrame.Y * frameSize.Y,
-                    frameSize.X, frameSize.Y), Color.White, angle, new Vector2 (frameSize.X/2 , frameSize.Y/2), 1f, SpriteEffects.None, 0);
+                    frameSize.X, frameSize.Y), Color.White, angle, new Vector2 (frameSize.X/2 , frameSize.Y/2), 1f, SpriteEffects.None, depth);
         }
 
         public Vector2 GetPosition

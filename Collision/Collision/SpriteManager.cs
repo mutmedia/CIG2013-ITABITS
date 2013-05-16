@@ -48,8 +48,8 @@ namespace Collision
         List<Sprite> bloodList = new List<Sprite>();
 
         //ENEMY INFO
-        int enemySpawnMin = 10;
-        int enemySpawnMax = 15;
+        int enemySpawnMin = 100;
+        int enemySpawnMax = 150;
         const int ENEMY_HEALTHBAR_HEIGHT = 10;
         //OGRE
             const int OGRESPEED = 6;
@@ -57,14 +57,14 @@ namespace Collision
             const int OGRELIFE = 20;
             const int OGREATTACKRANGE = 16;
             const int OGREDAMAGE = 1;
-            const int OGREXP = 1;
+            const int OGREXP = 10;
         /* CALCULO DA VIDA DOS INIMIGOS 
          * Um ataque com o meio da espada da 10 de dano
          * e o com a ponta da 5, assim, o padrao de unidade
          * de vida eh 10 */
 
         //PLAYER INFO
-            const int PLAYERTOTALHP = 10000;
+            const int PLAYERTOTALHP = 10000000;
             const int XPTOLEVEL1 = 5;
 
         int nextSpawnNumber = 0;
@@ -122,7 +122,7 @@ namespace Collision
                 //Create the Sprite
                 enemyList.Add(new Enemy(Game.Content.Load<Texture2D>(@"images/ogre"), position,
                      new Point(128, 128), 1, new Point(0, 0), new Point(1, 1),
-                     speed, 0, OGRELIFE, OGRELIFE, OGREATTACKSPEED, OGREATTACKRANGE, OGREDAMAGE, OGREXP,  this));
+                     speed, 0, OGRELIFE, OGRELIFE, OGREATTACKSPEED, OGREATTACKRANGE, OGREDAMAGE, OGREXP, 0.9f,  this));
 
                 enemyHealthBarList.Add(new Bar(position, ENEMY_HEALTHBAR_HEIGHT, 100, 1, Color.Red, Color.DarkRed, 0));
 
@@ -174,7 +174,7 @@ namespace Collision
                 if (enemy.hp <= 0)
                 {
                     bloodList.Add(new Sprite(Game.Content.Load<Texture2D>(@"Images/sangue"), enemyList[i].GetPosition,
-                        new Point(128, 128), new Point(0, 0), new Point(1, 1), Vector2.Zero, ((Game1)Game).rnd.Next()));
+                        new Point(128, 128), new Point(0, 0), new Point(1, 1), ((Game1)Game).rnd.Next(), -1f));
                     if (bloodList.Count() % 2000 == 1999)
                         bloodList.RemoveAt(0);
                     enemyList.RemoveAt(i);
@@ -313,40 +313,40 @@ namespace Collision
             player = new Player(
                 player_texture,
                 new Vector2((int)960, (int)540), new Point(player_texture.Width, player_texture.Height), new Point(0, 0),
-                new Point(1, 1), 0.0f, PLAYERTOTALHP, PLAYERTOTALHP, 0, XPTOLEVEL1, this);
+                new Point(1, 1), 0.0f, PLAYERTOTALHP, PLAYERTOTALHP, 0, XPTOLEVEL1, 1, this);
 
             galho = new Sword(
                 galho_texture, Vector2.Zero, new Point(galho_texture.Width, galho_texture.Height), new Point(0, 0),
-                new Point(1, 1), 0, 1, 2, this);
+                new Point(1, 1), 0, 1, 2, 1, this);
             cano = new Sword(
                 cano_texture, Vector2.Zero, new Point(cano_texture.Width, cano_texture.Height), new Point(0, 0),
-                new Point(1, 1), 0, 3, 4, this);
+                new Point(1, 1), 0, 3, 4, 1, this);
             crayon = new Sword(
                 crayon_texture, Vector2.Zero, new Point(crayon_texture.Width, crayon_texture.Height), new Point(0, 0),
-                new Point(1, 1), 0, 5, 6, this);
+                new Point(1, 1), 0, 5, 6, 1, this);
             lampada = new Sword(
                 lampada_texture, Vector2.Zero, new Point(lampada_texture.Width, lampada_texture.Height), new Point(0, 0),
-                new Point(1, 1), 0, 7, 8, this);
+                new Point(1, 1), 0, 7, 8, 1, this);
             serra = new Sword(
                 serra_texture, Vector2.Zero, new Point(serra_texture.Width, serra_texture.Height), new Point(0, 0),
-                new Point(1, 1), 0, 9, 10, this);
+                new Point(1, 1), 0, 9, 10, 1, this);
             espada = new Sword(
                 espada_texture, Vector2.Zero, new Point(espada_texture.Width, espada_texture.Height), new Point(0, 0),
-                new Point(1, 1), 0, 11, 12, this);
+                new Point(1, 1), 0, 11, 12, 1, this);
             jedi = new Sword(
                 jedi_texture, Vector2.Zero, new Point(jedi_texture.Width, jedi_texture.Height), new Point(0, 0),
-                new Point(1, 1), 0, 13, 14, this);
+                new Point(1, 1), 0, 13, 14, 1, this);
             piroca = new Sword(
                 piroca_texture, Vector2.Zero, new Point(piroca_texture.Width, piroca_texture.Height), new Point(0, 0),
-                new Point(1, 1), 0, 15, 16, this);
+                new Point(1, 1), 0, 15, 16, 1, this);
 
             levelSpriteUnit = new Sprite(number_texture, new Vector2(1350, 80), new Point(number_texture.Width/10, number_texture.Height),
-                new Point(0, 0), new Point(10, 1), 0.0f);
+                new Point(0, 0), new Point(10, 1), 0.0f, 1f);
             levelSpriteDecimal = new Sprite(number_texture, new Vector2(1300, 80), new Point(number_texture.Width/10, number_texture.Height),
-                new Point(0, 0), new Point(10, 1), 0.0f);
+                new Point(0, 0), new Point(10, 1), 0.0f, 1f);
 
             levelUpSprite = new Sprite(levelup_texture, Vector2.Zero, new Point(levelup_texture.Width / 5, levelup_texture.Height / 6),
-                new Point(0, 0), new Point(5, 6), 0.0f);
+                new Point(0, 0), new Point(5, 6), 0.0f, 0.5f);
 
             playerHealthBar = new Bar(new Vector2(20, 50), 60, 500, 1, Color.Red, Color.DarkRed, 1.3f);
             playerXpBar = new Bar(new Vector2(1400, 50), 60, 500, 1, Color.Green, Color.DarkGreen, 1.3f);

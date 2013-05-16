@@ -13,8 +13,8 @@ namespace Collision
         MouseState oldMouseState;
         
         public Button(Texture2D textureImage, Vector2 position, Point frameSize,
-            Point currentFrame, Point sheetSize, float angle)
-            : base(textureImage, position, frameSize, currentFrame, sheetSize, angle)
+            Point currentFrame, Point sheetSize, float angle, float depth)
+            : base(textureImage, position, frameSize, currentFrame, sheetSize, angle, depth)
         {
         }
 

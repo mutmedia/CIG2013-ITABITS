@@ -20,18 +20,21 @@ namespace Collision
         GraphicsDeviceManager graphics;
         SpriteBatch spriteBatch;
         SpriteManager spriteManager;
-        SpriteManager spriteManager2;
         MenuManager menuManager;
         public bool menuActive = true;
         public bool gameOver = false;
 
         public Random rnd { get; private set; }
+
+        public Sprite mouseSprite;
+        public MouseState mouseState;
+        public Vector2 mousePosition;
               
   
         public Game1()
             : base()
         {
-            this.IsMouseVisible = true;
+            this.IsMouseVisible = false;
 
             rnd = new Random();
 
@@ -54,12 +57,11 @@ namespace Collision
             // TODO: Add your initialization logic here
 
             spriteManager = new SpriteManager(this);
-            spriteManager2 = new SpriteManager(this);
             menuManager = new MenuManager(this);
 
+            
 
             Components.Add(spriteManager);
-            Components.Add(spriteManager2);
             Components.Add(menuManager);
 
             base.Initialize();
@@ -73,6 +75,10 @@ namespace Collision
         {
             // Create a new SpriteBatch, which can be used to draw textures.
             spriteBatch = new SpriteBatch(GraphicsDevice);
+
+            mouseSprite = new Sprite(Content.Load<Texture2D>(@"Images/UI/mousesprite"), Vector2.Zero, new Point(50, 50), new Point(0, 0),
+                new Point(1, 1), 0.0f, 1f);
+
 
             // TODO: use this.Content to load your game content here
         }
@@ -98,6 +104,11 @@ namespace Collision
 
             // TODO: Add your update logic here
 
+
+            mouseState = Mouse.GetState();
+            mousePosition = new Vector2(mouseState.X, mouseState.Y);
+            mouseSprite.position = mousePosition;
+
             base.Update(gameTime);
         }
 
@@ -108,10 +119,15 @@ namespace Collision
         protected override void Draw(GameTime gameTime)
         {
             GraphicsDevice.Clear(Color.DarkSlateGray);
+            spriteBatch.Begin(SpriteSortMode.FrontToBack, BlendState.AlphaBlend);
 
             // TODO: Add your drawing code here
 
+            mouseSprite.Draw(gameTime, spriteBatch);
+
             base.Draw(gameTime);
+
+            spriteBatch.End();
         }
     }
 }
