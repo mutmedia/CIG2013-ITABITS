@@ -15,7 +15,7 @@ namespace Collision
         public Point frameSize;
         public Point currentFrame;
         public Point sheetSize;
-        protected Vector2 speed;
+        public Vector2 speed;
         public Vector2 position;
         protected float angle;
         public float depth;

@@ -21,6 +21,7 @@ namespace Collision
         SpriteBatch spriteBatch;
         SpriteManager spriteManager;
         MenuManager menuManager;
+        MapManager mapManager;
         public bool menuActive = true;
         public bool gameOver = false;
 
@@ -58,11 +59,12 @@ namespace Collision
 
             spriteManager = new SpriteManager(this);
             menuManager = new MenuManager(this);
+            mapManager = new MapManager(this);
 
-            
-
+            Components.Add(mapManager);
             Components.Add(spriteManager);
             Components.Add(menuManager);
+            
 
             base.Initialize();
         }
@@ -118,7 +120,7 @@ namespace Collision
         /// <param name="gameTime">Provides a snapshot of timing values.</param>
         protected override void Draw(GameTime gameTime)
         {
-            GraphicsDevice.Clear(Color.DarkSlateGray);
+            GraphicsDevice.Clear(Color.Black);
             spriteBatch.Begin(SpriteSortMode.FrontToBack, BlendState.AlphaBlend);
 
             // TODO: Add your drawing code here

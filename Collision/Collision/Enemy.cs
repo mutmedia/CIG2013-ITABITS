@@ -14,17 +14,18 @@ namespace Collision
         public int totalhp;
         public int hp;
         bool isAttacking = false;
-        bool isFollowing = false;
+        public bool isFollowing = false;
         int attackCounter = 0;
         int attackSpeed;
         int attackRange;
         public int damage;
         public int xp;
+        public int weight;
         
         
         public Enemy(Texture2D textureImage, Vector2 position, Point frameSize,
-            int collisionOffset, Point currentFrame, Point sheetSize,
-            Vector2 speed, float angle, int totalhp, int hp, int attackSpeed, int attackRange, int damage, int xp, float depth, SpriteManager spriteManager)
+            Point currentFrame, Point sheetSize, float angle, float depth, SpriteManager spriteManager, int weight,
+            Vector2 speed, int totalhp, int hp, int attackSpeed, int attackRange, int damage, int xp)
             : base(textureImage, position, frameSize, currentFrame, sheetSize, speed, angle, depth)
         {
             this.spriteManager = spriteManager;
@@ -34,6 +35,7 @@ namespace Collision
             this.attackRange = attackRange;
             this.damage = damage;
             this.xp = xp;
+            this.weight = weight;
         }
 
         public Vector2 direction
@@ -64,14 +66,13 @@ namespace Collision
                 angle = (float)Math.PI - (float)Math.Atan(((double)player.X - (double)position.X) / ((double)player.Y - (double)position.Y));
             
             //andar quando no campo de visao e parar quando muito perto
-            
            float player_distance = (float)Math.Sqrt((player.X - position.X) * (player.X - position.X) + (player.Y - position.Y) * (player.Y - position.Y));
 
 
            if (player_distance < FOV)
                isFollowing = true;
             
-           if (isFollowing && player_distance > 64 + frameSize.X/2 + 2 && !isAttacking)
+           if (isFollowing && player_distance > spriteManager.player.frameSize.X/2 + frameSize.X/2 + attackRange/2 && !isAttacking)
            {
                 if(position.Y < player.Y)
                       position.Y += direction.Y;
@@ -86,7 +87,7 @@ namespace Collision
                      position.X -= direction.X;
            }
 
-           if (player_distance < 64 + frameSize.X/2 + 16 + 16 && !isAttacking && attackCounter > attackSpeed)
+           if (player_distance < spriteManager.player.frameSize.X/2 + frameSize.X/2 + attackRange && !isAttacking && attackCounter > attackSpeed)
            {
                isAttacking = true;
                attackCounter = 0;
@@ -96,30 +97,30 @@ namespace Collision
                if (attackCounter < 5)
                {
                    if (position.Y < player.Y)
-                       position.Y += 4;
+                       position.Y += attackRange / 4;
 
                    if (position.Y > player.Y)
-                       position.Y -= 4;
+                       position.Y -= attackRange / 4;
 
                    if (position.X < player.X)
-                       position.X += 4;
+                       position.X += attackRange / 4;
 
                    if (position.X > player.X)
-                       position.X -= 4;
+                       position.X -= attackRange / 4;
                }
                else if (attackCounter < 10)
                {
                    if (position.Y < player.Y)
-                       position.Y -= 4;
+                       position.Y -= attackRange / 4;
 
                    if (position.Y > player.Y)
-                       position.Y += 4;
+                       position.Y += attackRange / 4;
 
                    if (position.X < player.X)
-                       position.X -= 4;
+                       position.X -= attackRange / 4;
 
                    if (position.X > player.X)
-                       position.X += 4;
+                       position.X += attackRange / 4;
                }
                else
                    isAttacking = false;

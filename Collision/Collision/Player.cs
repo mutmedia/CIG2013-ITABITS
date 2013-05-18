@@ -8,7 +8,7 @@ using Microsoft.Xna.Framework.Input;
 
 namespace Collision
 {
-    class Player: Sprite
+    public class Player: Sprite
     {
         public int intSpeed = 10;
         public int hp;
@@ -95,7 +95,7 @@ namespace Collision
         {
             spriteBatch.Draw(textureImage, position,
                 new Rectangle(currentFrame.X * frameSize.X, currentFrame.Y * frameSize.Y,
-                    frameSize.X, frameSize.Y), Color.White, angle, new Vector2(frameSize.X / 2, frameSize.Y / 2), 1f, SpriteEffects.None, 1);
+                    frameSize.X, frameSize.Y), Color.White, angle, new Vector2(frameSize.X / 2, frameSize.Y / 2), 1f, SpriteEffects.None, 1f);
         }
     }
 }

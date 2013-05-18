@@ -35,8 +35,8 @@ namespace Collision
             float player_angle = spriteManager.GetPlayerAngle();
             MouseState mouseState = Mouse.GetState();
 
-            position.X = player_position.X + 64 * (float)Math.Cos((double)player_angle);
-            position.Y = player_position.Y + 64 * (float)Math.Sin((double)player_angle);
+            position.X = player_position.X + spriteManager.player.frameSize.X/2 * (float)Math.Cos((double)player_angle);
+            position.Y = player_position.Y + spriteManager.player.frameSize.X / 2 * (float)Math.Sin((double)player_angle);
             if(!isAttacking)
                 angle = player_angle + 0.2f;
             if (mouseState.LeftButton == ButtonState.Pressed && !isAttacking && attackcounter >= attackspeed)

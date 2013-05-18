@@ -17,6 +17,8 @@ namespace Collision
     /// </summary>
     public class MapManager : Microsoft.Xna.Framework.DrawableGameComponent
     {
+        public SpriteBatch spriteBatch;
+        Map testMap;
 
         public MapManager(Game game)
             : base(game)
@@ -26,7 +28,14 @@ namespace Collision
 
         protected override void LoadContent()
         {
+            spriteBatch = new SpriteBatch(Game.GraphicsDevice);
             
+            Texture2D groundTile = Game.Content.Load<Texture2D>(@"Tiles/groundTile");
+            Texture2D wallTile = Game.Content.Load<Texture2D>(@"Tiles/wallTile");
+            Texture2D portalTile = Game.Content.Load<Texture2D>(@"Tiles/portalTile");
+
+            testMap = new Map("C:\\Users\\Gustavo\\Documents\\GitHub\\CIG2013\\Collision\\Collision\\Content\\Maps\\maptest.txt", wallTile, groundTile, portalTile);
+            testMap.Initialize();
         }
 
         /// <summary>
@@ -36,6 +45,8 @@ namespace Collision
         public override void Initialize()
         {
             // TODO: Add your initialization code here
+
+            
             base.Initialize();
         }
 
@@ -51,6 +62,11 @@ namespace Collision
 
         public override void Draw(GameTime gameTime)
         {
+            spriteBatch.Begin(SpriteSortMode.FrontToBack, BlendState.AlphaBlend);
+            
+            testMap.Draw(gameTime, spriteBatch);
+
+            spriteBatch.End();
             
             base.Draw(gameTime);
         }
