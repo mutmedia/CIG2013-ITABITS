@@ -19,6 +19,9 @@ namespace Collision
     {
         public SpriteBatch spriteBatch;
         int time = 0;
+
+        public bool lastMapState = false;
+        public bool currentMapState = false;
         
         public Player player;
 
@@ -47,8 +50,6 @@ namespace Collision
         List<Sprite> bloodList = new List<Sprite>();
 
         //ENEMY INFO
-        int enemySpawnMin = 10;
-        int enemySpawnMax = 15;
         int spawnWeight = 10;
         const int ENEMY_HEALTHBAR_HEIGHT = 10;
 
@@ -110,10 +111,8 @@ namespace Collision
          * de vida eh 10 */
 
         //PLAYER INFO
-            const int PLAYERTOTALHP = 100;
+            const int PLAYERTOTALHP = 10000000;
             const int XPTOLEVEL1 = 10;
-
-        int nextSpawnNumber = 0;
 
         const float FIELD_OF_VIEW = 500;
 
@@ -121,12 +120,6 @@ namespace Collision
             : base(game)
         {
             // TODO: Construct any child components here
-        }
-
-        private void ResetSpawnNumber()
-        {
-            nextSpawnNumber = ((Game1)Game).rnd.Next(enemySpawnMin,
-                                                   enemySpawnMax);
         }
 
         public float getFOV()
@@ -161,6 +154,7 @@ namespace Collision
                 Enemy enemy = enemyList[i];
                 Bar enemyHealthBar = enemyHealthBarList[i];
                 Vector2 position = enemy.GetPosition;
+                currentMapState = player.changedMap;
 
                 if (distance_between_points(enemy.GetPosition, currentSword.collisionPoint_middle) <= enemy.frameSize.X/2 && currentSword.getIsAttacking)
                 {
@@ -195,25 +189,21 @@ namespace Collision
                   
             }
 
-            if (enemyList.Count == 0)
-            {
+            if (enemyList.Count == 0 || currentMapState)
                 SpawnEnemy();
-                ResetSpawnNumber();
-                spawnWeight += 10;
-            }
+            if(currentMapState)
+                bloodList.Clear();
+
+
         }
 
         public void GameOverUpdate()
         {
             if (((Game1)Game).gameOver)
             {
-                for (int i = 0; i < enemyList.Count; i++)
-                {
-                    enemyList.RemoveAt(i);
-                    enemyHealthBarList.RemoveAt(i);
-                }
-                enemySpawnMin = 10;
-                enemySpawnMax = 15;
+                enemyList.Clear();
+                enemyHealthBarList.Clear();
+                bloodList.Clear();
                 player.level = 0;
                 player.xp = 0;
                 player.xpToNextLevel = XPTOLEVEL1;
@@ -249,6 +239,7 @@ namespace Collision
         {   
             int currentWeight = 0;
             int nextSpawn = 0;
+            enemyList.Clear();
             while (currentWeight < spawnWeight)
             {
                 nextSpawn = ((Game1)Game).rnd.Next(enemyTypeList.Count() );
@@ -257,19 +248,19 @@ namespace Collision
                     
                     if (enemyTypeList[nextSpawn] == ogre)
                        enemyList.Add( new Enemy(ogre_texture, Vector2.Zero, new Point(ogre_texture.Width, ogre_texture.Height), new Point(0, 0), new Point(0, 0),
-                            0.0f, 1f, this, OGREWEIGHT, new Vector2(OGRESPEED, OGRESPEED), OGRELIFE, OGRELIFE, OGREATTACKSPEED, OGREATTACKRANGE, OGREDAMAGE, OGREXP));
+                            0.0f, 1f, this, OGREWEIGHT, new Vector2(OGRESPEED, OGRESPEED), OGRELIFE, OGRELIFE, OGREATTACKSPEED, OGREATTACKRANGE, OGREDAMAGE, OGREXP, ((Game1)Game).mapManager));
                     else if (enemyTypeList[nextSpawn] == troll)
                        enemyList.Add( new Enemy(troll_texture, Vector2.Zero, new Point(troll_texture.Width, troll_texture.Height), new Point(0, 0), new Point(0, 0),
-                            0.0f, 1f, this, TROLLWEIGHT, new Vector2(TROLLSPEED, TROLLSPEED), TROLLLIFE, TROLLLIFE, TROLLATTACKSPEED, TROLLATTACKRANGE, TROLLDAMAGE, TROLLXP));
+                            0.0f, 1f, this, TROLLWEIGHT, new Vector2(TROLLSPEED, TROLLSPEED), TROLLLIFE, TROLLLIFE, TROLLATTACKSPEED, TROLLATTACKRANGE, TROLLDAMAGE, TROLLXP, ((Game1)Game).mapManager));
                     else if(enemyTypeList[nextSpawn] == poringer)
                         enemyList.Add (new Enemy(poringer_texture, Vector2.Zero, new Point(poringer_texture.Width, poringer_texture.Height), new Point(0, 0), new Point(0, 0),
-                            0.0f, 1f, this, PORINGERWEIGHT, new Vector2(PORINGERSPEED, PORINGERSPEED), PORINGERLIFE, PORINGERLIFE, PORINGERATTACKSPEED, PORINGERATTACKRANGE, PORINGERDAMAGE, PORINGERXP));
+                            0.0f, 1f, this, PORINGERWEIGHT, new Vector2(PORINGERSPEED, PORINGERSPEED), PORINGERLIFE, PORINGERLIFE, PORINGERATTACKSPEED, PORINGERATTACKRANGE, PORINGERDAMAGE, PORINGERXP, ((Game1)Game).mapManager));
                     else if (enemyTypeList[nextSpawn] == baiacu)
                         enemyList.Add(new Enemy(baiacu_texture, Vector2.Zero, new Point(baiacu_texture.Width, baiacu_texture.Height), new Point(0, 0), new Point(0, 0),
-                            0.0f, 1f, this, BAIACUWEIGHT, new Vector2(BAIACUSPEED, BAIACUSPEED), BAIACULIFE, BAIACULIFE, BAIACUATTACKSPEED, BAIACUATTACKRANGE, BAIACUDAMAGE, BAIACUXP));
+                            0.0f, 1f, this, BAIACUWEIGHT, new Vector2(BAIACUSPEED, BAIACUSPEED), BAIACULIFE, BAIACULIFE, BAIACUATTACKSPEED, BAIACUATTACKRANGE, BAIACUDAMAGE, BAIACUXP, ((Game1)Game).mapManager));
                     else if (enemyTypeList[nextSpawn] == goblin)
                         enemyList.Add(new Enemy(goblin_texture, Vector2.Zero, new Point(goblin_texture.Width, goblin_texture.Height), new Point(0, 0), new Point(0, 0),
-                            0.0f, 1f, this, GOBLINWEIGHT, new Vector2(GOBLINSPEED, GOBLINSPEED), GOBLINLIFE, GOBLINLIFE, GOBLINATTACKSPEED, GOBLINATTACKRANGE, GOBLINDAMAGE, GOBLINXP));
+                            0.0f, 1f, this, GOBLINWEIGHT, new Vector2(GOBLINSPEED, GOBLINSPEED), GOBLINLIFE, GOBLINLIFE, GOBLINATTACKSPEED, GOBLINATTACKRANGE, GOBLINDAMAGE, GOBLINXP, ((Game1)Game).mapManager));
 
 
 
@@ -282,32 +273,25 @@ namespace Collision
         {
             
             generateEnemyList();
+            enemyHealthBarList.Clear();
             
             for (int i = 0; i < enemyList.Count(); i++)
             {
-                if (i < 0)
-                    i = 0;
-
                 Vector2 randposition = Vector2.Zero;
-
-                randposition = new Vector2(((Game1)Game).rnd.Next(0,
+                do
+                {
+                    randposition = new Vector2(((Game1)Game).rnd.Next(0,
                                     Game.GraphicsDevice.PresentationParameters.BackBufferWidth
                                     - (enemyList[i].frameSize.X) / 2), ((Game1)Game).rnd.Next(0,
                                     Game.GraphicsDevice.PresentationParameters.BackBufferHeight
                                     - (enemyList[i].frameSize.Y) / 2));
 
-                //Create the Sprite
-                enemyList[i].position = randposition;
+                    //Create the Sprite
+                    enemyList[i].position = randposition;
+                } while (distance_between_points(randposition, player.GetPosition) <= FIELD_OF_VIEW && i > 0 || !enemyList[i].canSpawn);
                 
                 enemyHealthBarList.Add(new Bar(Vector2.Zero, ENEMY_HEALTHBAR_HEIGHT, enemyList[i].frameSize.X, 1, Color.Red, Color.DarkRed, 0));
-
-                if (distance_between_points(randposition, player.GetPosition) <= FIELD_OF_VIEW && i > 0)
-                {
-                    enemyList.Add(enemyList[i]);
-                    enemyList.RemoveAt(i);
-                    enemyHealthBarList.RemoveAt(i);
-                    i--;
-                }
+               
             }
 
         }
@@ -432,27 +416,27 @@ namespace Collision
 
             //Enemies
             ogre = new Enemy( ogre_texture, Vector2.Zero, new Point(ogre_texture.Width, ogre_texture.Height), new Point(0, 0), new Point(0,0),
-                0.0f, 1f, this, OGREWEIGHT, new Vector2(OGRESPEED, OGRESPEED), OGRELIFE, OGRELIFE, OGREATTACKSPEED, OGREATTACKRANGE, OGREDAMAGE, OGREXP);
+                0.0f, 1f, this, OGREWEIGHT, new Vector2(OGRESPEED, OGRESPEED), OGRELIFE, OGRELIFE, OGREATTACKSPEED, OGREATTACKRANGE, OGREDAMAGE, OGREXP, ((Game1)Game).mapManager);
             for (int i = 0; i < 10; i++)
                 enemyTypeList.Add(ogre);
 
             troll = new Enemy(troll_texture, Vector2.Zero, new Point(troll_texture.Width, troll_texture.Height), new Point(0, 0), new Point(0, 0),
-                0.0f, 1f, this, TROLLWEIGHT, new Vector2(TROLLSPEED, TROLLSPEED), TROLLLIFE, TROLLLIFE, TROLLATTACKSPEED, TROLLATTACKRANGE, TROLLDAMAGE, TROLLXP);
+                0.0f, 1f, this, TROLLWEIGHT, new Vector2(TROLLSPEED, TROLLSPEED), TROLLLIFE, TROLLLIFE, TROLLATTACKSPEED, TROLLATTACKRANGE, TROLLDAMAGE, TROLLXP, ((Game1)Game).mapManager);
             for (int i = 0; i < 1; i++)
                 enemyTypeList.Add(troll);
 
             poringer = new Enemy(poringer_texture, Vector2.Zero, new Point(poringer_texture.Width, poringer_texture.Height), new Point(0, 0), new Point(0, 0),
-                0.0f, 1f, this, PORINGERWEIGHT, new Vector2(PORINGERSPEED, PORINGERSPEED), PORINGERLIFE, PORINGERLIFE, PORINGERATTACKSPEED, PORINGERATTACKRANGE, PORINGERDAMAGE, PORINGERXP);
+                0.0f, 1f, this, PORINGERWEIGHT, new Vector2(PORINGERSPEED, PORINGERSPEED), PORINGERLIFE, PORINGERLIFE, PORINGERATTACKSPEED, PORINGERATTACKRANGE, PORINGERDAMAGE, PORINGERXP, ((Game1)Game).mapManager);
             for (int i = 0; i < 100; i++)
                 enemyTypeList.Add(poringer);
 
             baiacu = new Enemy(baiacu_texture, Vector2.Zero, new Point(baiacu_texture.Width, baiacu_texture.Height), new Point(0, 0), new Point(0, 0),
-                0.0f, 1f, this, BAIACUWEIGHT, new Vector2(BAIACUSPEED, BAIACUSPEED), BAIACULIFE, BAIACULIFE, BAIACUATTACKSPEED, BAIACUATTACKRANGE, BAIACUDAMAGE, BAIACUXP);
+                0.0f, 1f, this, BAIACUWEIGHT, new Vector2(BAIACUSPEED, BAIACUSPEED), BAIACULIFE, BAIACULIFE, BAIACUATTACKSPEED, BAIACUATTACKRANGE, BAIACUDAMAGE, BAIACUXP, ((Game1)Game).mapManager);
             for (int i = 0; i < 100; i++)
                 enemyTypeList.Add(baiacu);
 
             goblin = new Enemy(goblin_texture, Vector2.Zero, new Point(goblin_texture.Width, goblin_texture.Height), new Point(0, 0), new Point(0, 0),
-                0.0f, 1f, this, GOBLINWEIGHT, new Vector2(GOBLINSPEED, GOBLINSPEED), GOBLINLIFE, GOBLINLIFE, GOBLINATTACKSPEED, GOBLINATTACKRANGE, GOBLINDAMAGE, GOBLINXP);
+                0.0f, 1f, this, GOBLINWEIGHT, new Vector2(GOBLINSPEED, GOBLINSPEED), GOBLINLIFE, GOBLINLIFE, GOBLINATTACKSPEED, GOBLINATTACKRANGE, GOBLINDAMAGE, GOBLINXP, ((Game1)Game).mapManager);
             for (int i = 0; i < 100; i++)
                 enemyTypeList.Add(goblin);
 
@@ -465,7 +449,6 @@ namespace Collision
         public override void Initialize()
         {
             // TODO: Add your initialization code here
-            ResetSpawnNumber();
             base.Initialize();
         }
 

@@ -36,7 +36,7 @@ namespace Collision
         public Game1()
             : base()
         {
-            this.IsMouseVisible = true;
+            this.IsMouseVisible = false;
 
             rnd = new Random();
 
@@ -45,7 +45,7 @@ namespace Collision
 
             graphics.PreferredBackBufferHeight = 1080; graphics.PreferredBackBufferWidth = 1920;
             graphics.PreferMultiSampling = false;
-            graphics.IsFullScreen = false;
+            graphics.IsFullScreen = true;
         }
 
         /// <summary>

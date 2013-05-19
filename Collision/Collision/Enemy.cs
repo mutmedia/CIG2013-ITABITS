@@ -11,6 +11,7 @@ namespace Collision
     class Enemy: Sprite
     {
         SpriteManager spriteManager;
+        MapManager mapManager;
         public int totalhp;
         public int hp;
         bool isAttacking = false;
@@ -25,7 +26,7 @@ namespace Collision
         
         public Enemy(Texture2D textureImage, Vector2 position, Point frameSize,
             Point currentFrame, Point sheetSize, float angle, float depth, SpriteManager spriteManager, int weight,
-            Vector2 speed, int totalhp, int hp, int attackSpeed, int attackRange, int damage, int xp)
+            Vector2 speed, int totalhp, int hp, int attackSpeed, int attackRange, int damage, int xp, MapManager mapManager)
             : base(textureImage, position, frameSize, currentFrame, sheetSize, speed, angle, depth)
         {
             this.spriteManager = spriteManager;
@@ -36,6 +37,7 @@ namespace Collision
             this.damage = damage;
             this.xp = xp;
             this.weight = weight;
+            this.mapManager = mapManager;
         }
 
         public Vector2 direction
@@ -51,6 +53,19 @@ namespace Collision
             get
             {
                 return isAttacking;
+            }
+        }
+
+        public bool canSpawn
+        {
+            get
+            {
+                foreach (Rectangle r in mapManager.currentMap.groundRectangle)
+                {
+                    if (topCollisionRectangle.Intersects(r) || downCollisionRectangle.Intersects(r) || leftCollisionRectangle.Intersects(r) || rightCollisionRectangle.Intersects(r))
+                        return true;
+                }
+                return false;
             }
         }
 
