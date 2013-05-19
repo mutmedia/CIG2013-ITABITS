@@ -9,7 +9,7 @@ using System.IO;
 
 namespace Collision
 {
-    class Map
+    public class Map
     {
         string textPath;
         char[][] tiles;
@@ -23,6 +23,9 @@ namespace Collision
         const char portalChar = '@';
         public Rectangle wallCollisionRectangle = new Rectangle();
         public Rectangle portalRectangle = new Rectangle();
+        public Rectangle groundRectangle = new Rectangle();
+        const int VERTICAL_REPOSITION = 140;
+        const int HORIZONTAL_REPOSITION = 64;
         
 
         public Map(string textPath, Texture2D wallTile, Texture2D groundTile, Texture2D portalTile)
@@ -48,8 +51,15 @@ namespace Collision
 			    {
 			        for (int j = 0; j < height; j++)
 			        {
-			        
-			        }
+                        if (tiles[i][j] == wallChar)
+                            wallCollisionRectangle = new Rectangle(HORIZONTAL_REPOSITION + wallTile.Width * j, VERTICAL_REPOSITION + wallTile.Height * i, wallTile.Width, wallTile.Height);
+
+                        if (tiles[i][j] == portalChar)
+                            wallCollisionRectangle = new Rectangle(HORIZONTAL_REPOSITION + portalTile.Width * j, VERTICAL_REPOSITION + portalTile.Height * i, portalTile.Width, portalTile.Height);
+
+                        if (tiles[i][j] == groundChar)
+                            wallCollisionRectangle = new Rectangle(HORIZONTAL_REPOSITION + groundTile.Width * j, VERTICAL_REPOSITION + groundTile.Height * i, groundTile.Width, groundTile.Height);
+                    }
 			    } 
             }
         } 
@@ -61,11 +71,11 @@ namespace Collision
 			    for (int j = 0; j < height; j++)
 			    {
                     if (tiles[i][j] == groundChar)
-                        spriteBatch.Draw(groundTile, new Vector2(64 +groundTile.Width * j,140 + groundTile.Height * i), Color.White);
+                        spriteBatch.Draw(groundTile, new Vector2(HORIZONTAL_REPOSITION + groundTile.Width * j, VERTICAL_REPOSITION + groundTile.Height * i), Color.White);
                     if (tiles[i][j] == wallChar)
-                        spriteBatch.Draw(wallTile, new Vector2(64 + wallTile.Width * j, 140 + wallTile.Height * i), Color.White);
+                        spriteBatch.Draw(wallTile, new Vector2(HORIZONTAL_REPOSITION + wallTile.Width * j, VERTICAL_REPOSITION + wallTile.Height * i), Color.White);
                     if (tiles[i][j] == portalChar)
-                        spriteBatch.Draw(portalTile, new Vector2(64 + portalTile.Width * j, 140 + portalTile.Height * i), Color.White);
+                        spriteBatch.Draw(portalTile, new Vector2(HORIZONTAL_REPOSITION + portalTile.Width * j, VERTICAL_REPOSITION + portalTile.Height * i), Color.White);
 			    }
 			} 
         }

@@ -19,9 +19,9 @@ namespace Collision
     {
         GraphicsDeviceManager graphics;
         SpriteBatch spriteBatch;
-        SpriteManager spriteManager;
-        MenuManager menuManager;
-        MapManager mapManager;
+        public SpriteManager spriteManager;
+        public MenuManager menuManager;
+        public MapManager mapManager;
         public bool menuActive = true;
         public bool gameOver = false;
 
@@ -30,12 +30,13 @@ namespace Collision
         public Sprite mouseSprite;
         public MouseState mouseState;
         public Vector2 mousePosition;
+        public Rectangle rectangle;
               
   
         public Game1()
             : base()
         {
-            this.IsMouseVisible = false;
+            this.IsMouseVisible = true;
 
             rnd = new Random();
 
@@ -44,7 +45,7 @@ namespace Collision
 
             graphics.PreferredBackBufferHeight = 1080; graphics.PreferredBackBufferWidth = 1920;
             graphics.PreferMultiSampling = false;
-            graphics.IsFullScreen = true;
+            graphics.IsFullScreen = false;
         }
 
         /// <summary>
@@ -64,6 +65,7 @@ namespace Collision
             Components.Add(mapManager);
             Components.Add(spriteManager);
             Components.Add(menuManager);
+            rectangle.Right.Equals(rectangle.Left);
             
 
             base.Initialize();

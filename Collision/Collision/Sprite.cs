@@ -61,6 +61,14 @@ namespace Collision
                     frameSize.X, frameSize.Y), Color.White, angle, new Vector2 (frameSize.X/2 , frameSize.Y/2), 1f, SpriteEffects.None, depth);
         }
 
+        public Rectangle collisionRectangle
+        {
+            get
+            {
+                return new Rectangle((int)(position.X - frameSize.X / 2) - 2, (int)(position.Y - frameSize.Y / 2) - 2, (int)(frameSize.X) + 2, (int)(frameSize.Y) + 2);
+            }
+        }
+
         public Vector2 GetPosition
         {
             get

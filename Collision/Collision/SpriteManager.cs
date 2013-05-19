@@ -40,8 +40,6 @@ namespace Collision
         public Sprite levelUpSprite;
         public bool startLevelUpAnimation = false;
         public int levelupAnimationFrameTime = 4;
-                
-        public bool playerCanMove = true;
 
         List<Enemy> enemyList = new List<Enemy>();
         List<Enemy> enemyTypeList = new List<Enemy>();
@@ -60,11 +58,21 @@ namespace Collision
         Texture2D poringer_texture;
             const int PORINGERSPEED = 20;
             const int PORINGERATTACKSPEED = 25;
-            const int PORINGERLIFE = 10;
+            const int PORINGERLIFE = 1;
             const int PORINGERATTACKRANGE = 4;
             const int PORINGERDAMAGE = 1;
             const int PORINGERXP = 10;
-            const int PORINGERWEIGHT = 10000;
+            const int PORINGERWEIGHT = 10;
+        //GOBLIN
+        Enemy goblin;
+        Texture2D goblin_texture;
+            const int GOBLINSPEED = 20;
+            const int GOBLINATTACKSPEED = 25;
+            const int GOBLINLIFE = 1;
+            const int GOBLINATTACKRANGE = 4;
+            const int GOBLINDAMAGE = 1;
+            const int GOBLINXP = 10;
+            const int GOBLINWEIGHT = 10;
         //OGRE
         Enemy ogre;
         Texture2D ogre_texture;
@@ -74,7 +82,7 @@ namespace Collision
             const int OGREATTACKRANGE = 16;
             const int OGREDAMAGE = 1;
             const int OGREXP = 10;
-            const int OGREWEIGHT = 10000;
+            const int OGREWEIGHT = 10;
         //TROLL
         Enemy troll;
         Texture2D troll_texture;
@@ -84,7 +92,7 @@ namespace Collision
             const int TROLLATTACKRANGE = 16;
             const int TROLLDAMAGE = 10;
             const int TROLLXP = 100;
-            const int TROLLWEIGHT = 10000;
+            const int TROLLWEIGHT = 10;
         //BAIACU
         Enemy baiacu;
         Texture2D baiacu_texture;
@@ -93,7 +101,7 @@ namespace Collision
             const int BAIACULIFE = 200;
             const int BAIACUATTACKRANGE = 4;
             const int BAIACUDAMAGE = 10;
-            const int BAIACUXP = 100;
+            const int BAIACUXP = 50;
             const int BAIACUWEIGHT = 10;
 
         /* CALCULO DA VIDA DOS INIMIGOS 
@@ -102,7 +110,7 @@ namespace Collision
          * de vida eh 10 */
 
         //PLAYER INFO
-            const int PLAYERTOTALHP = 1000;
+            const int PLAYERTOTALHP = 100;
             const int XPTOLEVEL1 = 10;
 
         int nextSpawnNumber = 0;
@@ -154,12 +162,12 @@ namespace Collision
                 Bar enemyHealthBar = enemyHealthBarList[i];
                 Vector2 position = enemy.GetPosition;
 
-                if (distance_between_points(enemy.GetPosition, currentSword.collisionPoint_middle) <= enemy.frameSize.X && currentSword.getIsAttacking)
+                if (distance_between_points(enemy.GetPosition, currentSword.collisionPoint_middle) <= enemy.frameSize.X/2 && currentSword.getIsAttacking)
                 {
                     enemy.hp -= currentSword.midDamage;
                 }
 
-                if (distance_between_points(enemy.GetPosition, currentSword.collisionPoint_tip) <= enemy.frameSize.X && currentSword.getIsAttacking)
+                if (distance_between_points(enemy.GetPosition, currentSword.collisionPoint_tip) <= enemy.frameSize.X/2 && currentSword.getIsAttacking)
                 {
                     enemy.hp -= currentSword.tipDamage;
                 }
@@ -191,8 +199,7 @@ namespace Collision
             {
                 SpawnEnemy();
                 ResetSpawnNumber();
-                enemySpawnMin += 5;
-                enemySpawnMax += 5;
+                spawnWeight += 10;
             }
         }
 
@@ -260,6 +267,9 @@ namespace Collision
                     else if (enemyTypeList[nextSpawn] == baiacu)
                         enemyList.Add(new Enemy(baiacu_texture, Vector2.Zero, new Point(baiacu_texture.Width, baiacu_texture.Height), new Point(0, 0), new Point(0, 0),
                             0.0f, 1f, this, BAIACUWEIGHT, new Vector2(BAIACUSPEED, BAIACUSPEED), BAIACULIFE, BAIACULIFE, BAIACUATTACKSPEED, BAIACUATTACKRANGE, BAIACUDAMAGE, BAIACUXP));
+                    else if (enemyTypeList[nextSpawn] == goblin)
+                        enemyList.Add(new Enemy(goblin_texture, Vector2.Zero, new Point(goblin_texture.Width, goblin_texture.Height), new Point(0, 0), new Point(0, 0),
+                            0.0f, 1f, this, GOBLINWEIGHT, new Vector2(GOBLINSPEED, GOBLINSPEED), GOBLINLIFE, GOBLINLIFE, GOBLINATTACKSPEED, GOBLINATTACKRANGE, GOBLINDAMAGE, GOBLINXP));
 
 
 
@@ -270,6 +280,7 @@ namespace Collision
 
         private void SpawnEnemy()
         {
+            
             generateEnemyList();
             
             for (int i = 0; i < enemyList.Count(); i++)
@@ -288,7 +299,7 @@ namespace Collision
                 //Create the Sprite
                 enemyList[i].position = randposition;
                 
-                enemyHealthBarList.Add(new Bar(Vector2.Zero, ENEMY_HEALTHBAR_HEIGHT, 100, 1, Color.Red, Color.DarkRed, 0));
+                enemyHealthBarList.Add(new Bar(Vector2.Zero, ENEMY_HEALTHBAR_HEIGHT, enemyList[i].frameSize.X, 1, Color.Red, Color.DarkRed, 0));
 
                 if (distance_between_points(randposition, player.GetPosition) <= FIELD_OF_VIEW && i > 0)
                 {
@@ -374,12 +385,15 @@ namespace Collision
             troll_texture = Game.Content.Load<Texture2D>(@"Images/Enemies/Troll");
             poringer_texture = Game.Content.Load<Texture2D>(@"Images/Enemies/poringer");
             baiacu_texture = Game.Content.Load<Texture2D>(@"Images/Enemies/baiacu");
+            goblin_texture = Game.Content.Load<Texture2D>(@"Images/Enemies/goblin");
 
+            //Player
             player = new Player(
                 player_texture,
                 new Vector2((int)960, (int)540), new Point(player_texture.Width, player_texture.Height), new Point(0, 0),
-                new Point(1, 1), 0.0f, PLAYERTOTALHP, PLAYERTOTALHP, 0, XPTOLEVEL1, 1, this);
+                new Point(1, 1), 0.0f, PLAYERTOTALHP, PLAYERTOTALHP, 0, XPTOLEVEL1, 1, this, ((Game1)Game).mapManager);
 
+            //Swords
             galho = new Sword(
                 galho_texture, Vector2.Zero, new Point(galho_texture.Width, galho_texture.Height), new Point(0, 0),
                 new Point(1, 1), 0, 1, 2, 1, this);
@@ -404,7 +418,7 @@ namespace Collision
             piroca = new Sword(
                 piroca_texture, Vector2.Zero, new Point(piroca_texture.Width, piroca_texture.Height), new Point(0, 0),
                 new Point(1, 1), 0, 15, 16, 1, this);
-
+            // UI
             levelSpriteUnit = new Sprite(number_texture, new Vector2(1350, 80), new Point(number_texture.Width/10, number_texture.Height),
                 new Point(0, 0), new Point(10, 1), 0.0f, 1f);
             levelSpriteDecimal = new Sprite(number_texture, new Vector2(1300, 80), new Point(number_texture.Width/10, number_texture.Height),
@@ -416,6 +430,7 @@ namespace Collision
             playerHealthBar = new Bar(new Vector2(20, 50), 60, 500, 1, Color.Red, Color.DarkRed, 1.3f);
             playerXpBar = new Bar(new Vector2(1400, 50), 60, 500, 1, Color.Green, Color.DarkGreen, 1.3f);
 
+            //Enemies
             ogre = new Enemy( ogre_texture, Vector2.Zero, new Point(ogre_texture.Width, ogre_texture.Height), new Point(0, 0), new Point(0,0),
                 0.0f, 1f, this, OGREWEIGHT, new Vector2(OGRESPEED, OGRESPEED), OGRELIFE, OGRELIFE, OGREATTACKSPEED, OGREATTACKRANGE, OGREDAMAGE, OGREXP);
             for (int i = 0; i < 10; i++)
@@ -436,8 +451,12 @@ namespace Collision
             for (int i = 0; i < 100; i++)
                 enemyTypeList.Add(baiacu);
 
-        }
+            goblin = new Enemy(goblin_texture, Vector2.Zero, new Point(goblin_texture.Width, goblin_texture.Height), new Point(0, 0), new Point(0, 0),
+                0.0f, 1f, this, GOBLINWEIGHT, new Vector2(GOBLINSPEED, GOBLINSPEED), GOBLINLIFE, GOBLINLIFE, GOBLINATTACKSPEED, GOBLINATTACKRANGE, GOBLINDAMAGE, GOBLINXP);
+            for (int i = 0; i < 100; i++)
+                enemyTypeList.Add(goblin);
 
+        }
 
         /// <summary>
         /// Allows the game component to perform any initialization it needs to before starting
