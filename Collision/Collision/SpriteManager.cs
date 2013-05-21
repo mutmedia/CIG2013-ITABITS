@@ -54,6 +54,15 @@ namespace Collision
         List<Bar> enemyHealthBarList = new List<Bar>();
         List<Sprite> bloodList = new List<Sprite>();
 
+        public bool boss0Killed = false;
+        public bool boss1Killed = false;
+        public bool boss2Killed = false;
+        public bool boss3Killed = false;
+        public bool boss4Killed = false;
+        public bool boss5Killed = false;
+        public bool boss6Killed = false;
+        
+
         //ENEMY INFO
         int spawnWeight = 10;
         const int ENEMY_HEALTHBAR_HEIGHT = 10;
@@ -61,43 +70,43 @@ namespace Collision
         //PORINGER
         Enemy poringer;
         Texture2D poringer_texture;
-            const int PORINGERSPEED = 20;
-            const int PORINGERATTACKSPEED = 10;
+            const int PORINGERSPEED = 9;
+            const int PORINGERATTACKSPEED = 25;
             const int PORINGERLIFE = 5;
-            const int PORINGERATTACKRANGE = 1;
-            const int PORINGERDAMAGE = 1;
-            const int PORINGERXP = 10000;
-            const int PORINGERWEIGHT = 10;
+            const int PORINGERATTACKRANGE = 9;
+            const int PORINGERDAMAGE = 3;
+            const int PORINGERXP = 50000;
+            const int PORINGERWEIGHT = 1;
         //GOBLIN
         Enemy goblin;
         Texture2D goblin_texture;
-            const int GOBLINSPEED = 10;
-            const int GOBLINATTACKSPEED = 50;
-            const int GOBLINLIFE = 20;
-            const int GOBLINATTACKRANGE = 10;
-            const int GOBLINDAMAGE = 10;
-            const int GOBLINXP = 5;
-            const int GOBLINWEIGHT = 50;
+            const int GOBLINSPEED = 5;
+            const int GOBLINATTACKSPEED = 40;
+            const int GOBLINLIFE = 90;
+            const int GOBLINATTACKRANGE = 14;
+            const int GOBLINDAMAGE = 11;
+            const int GOBLINXP = 50000;
+            const int GOBLINWEIGHT = 2;
         //OGRE
         Enemy ogre;
         Texture2D ogre_texture;
-            const int OGRESPEED = 5;
+            const int OGRESPEED = 3;
             const int OGREATTACKSPEED = 50;
-            const int OGRELIFE = 30;
-            const int OGREATTACKRANGE = 15;
-            const int OGREDAMAGE = 20;
-            const int OGREXP = 10;
-            const int OGREWEIGHT = 100;
+            const int OGRELIFE = 200;
+            const int OGREATTACKRANGE = 12;
+            const int OGREDAMAGE = 18;
+            const int OGREXP = 50000;
+            const int OGREWEIGHT = 5;
         //TROLL
         Enemy troll;
         Texture2D troll_texture;
-            const int TROLLSPEED = 5;
-            const int TROLLATTACKSPEED = 100;
-            const int TROLLLIFE = 50;
-            const int TROLLATTACKRANGE = 8;
-            const int TROLLDAMAGE = 30;
-            const int TROLLXP = 20;
-            const int TROLLWEIGHT = 100;
+            const int TROLLSPEED = 3;
+            const int TROLLATTACKSPEED = 5;
+            const int TROLLLIFE = 2000;
+            const int TROLLATTACKRANGE = 4;
+            const int TROLLDAMAGE = 6;
+            const int TROLLXP = 50000;
+            const int TROLLWEIGHT = 10;
         //BAIACU
         Enemy baiacu;
         Texture2D baiacu_texture;
@@ -107,7 +116,7 @@ namespace Collision
             const int BAIACUATTACKRANGE = 13;
             const int BAIACUDAMAGE = 80;
             const int BAIACUXP = 0;
-            const int BAIACUWEIGHT = 10;
+            const int BAIACUWEIGHT = 1000;
 
         //PLAYER INFO
             const int PLAYERTOTALHP = 1000;
@@ -136,6 +145,34 @@ namespace Collision
             return player.GetAngle;
         }
 
+        public void spawnBoss()
+        {
+            if (!boss0Killed)
+            {
+                enemyHealthBarList.Clear();
+                enemyList.Add(troll);
+
+                for (int i = 0; i < enemyList.Count(); i++)
+                {
+                    Vector2 randposition = Vector2.Zero;
+                    do
+                    {
+                        randposition = new Vector2(((Game1)Game).rnd.Next(0,
+                                        Game.GraphicsDevice.PresentationParameters.BackBufferWidth
+                                        - (enemyList[i].frameSize.X) / 2), ((Game1)Game).rnd.Next(0,
+                                        Game.GraphicsDevice.PresentationParameters.BackBufferHeight
+                                        - (enemyList[i].frameSize.Y) / 2));
+
+                        //Create the Sprite
+                        enemyList[i].position = randposition;
+                    } while (distance_between_points(randposition, player.GetPosition) <= FIELD_OF_VIEW + enemyList[i].frameSize.X && i > 0 || !enemyList[i].canSpawn);
+
+                    enemyHealthBarList.Add(new Bar(Vector2.Zero, ENEMY_HEALTHBAR_HEIGHT, enemyList[i].frameSize.X, 1, Color.Red, Color.DarkRed, 0));
+                }
+                boss0Killed = true;
+            }
+        }
+
         public float GetPlayerHpPercentage()
         {
             return (float)player.hp / (float)player.totalhp;
@@ -148,7 +185,9 @@ namespace Collision
 
         private void updateEnemyInteraction(GameTime gameTime)
         {
+            int bossCheckingAux = ((Game1)Game).mapManager.floorSize * ((Game1)Game).mapManager.floorSize - 1;
             currentMapState = player.changedMap;
+
             
             for (int i = 0; i < enemyList.Count; i++)
             {
@@ -192,11 +231,51 @@ namespace Collision
             if (enemyList.Count() == 0)
                 ((Game1)Game).mapManager.miniMap.boolmaze[((Game1)Game).mapManager.currentRoom.Y, ((Game1)Game).mapManager.currentRoom.X] = true;
 
-            if( ((Game1)Game).mapManager.miniMap.boolmaze[((Game1)Game).mapManager.currentRoom.Y, ((Game1)Game).mapManager.currentRoom.X] && currentMapState)
-                bloodList.Clear();
-            if (!((Game1)Game).mapManager.miniMap.boolmaze[((Game1)Game).mapManager.currentRoom.Y, ((Game1)Game).mapManager.currentRoom.X] && currentMapState)
+            for (int i = 0; i < ((Game1)Game).mapManager.floorSize; i++)
             {
-                SpawnEnemy();
+                for (int j = 0; j < ((Game1)Game).mapManager.floorSize; j++)
+                {
+                    if (((Game1)Game).mapManager.miniMap.boolmaze[i, j])
+                    {
+                        bossCheckingAux--;
+                    }
+                }
+            }
+
+            
+
+            if (player.changedMap_Up && !((Game1)Game).mapManager.miniMap.boolmaze[((Game1)Game).mapManager.currentRoom.Y - 1, ((Game1)Game).mapManager.currentRoom.X])
+            {
+                if (bossCheckingAux == 0)
+                    spawnBoss();
+                else
+                    SpawnEnemy();
+            }
+            if (player.changedMap_Down && !((Game1)Game).mapManager.miniMap.boolmaze[((Game1)Game).mapManager.currentRoom.Y + 1, ((Game1)Game).mapManager.currentRoom.X])
+            {
+                if (bossCheckingAux == 0)
+                    spawnBoss();
+                else
+                    SpawnEnemy();
+            }
+            if (player.changedMap_Right && !((Game1)Game).mapManager.miniMap.boolmaze[((Game1)Game).mapManager.currentRoom.Y, ((Game1)Game).mapManager.currentRoom.X + 1])
+            {
+                if (bossCheckingAux == 0)
+                    spawnBoss();
+                else
+                    SpawnEnemy();
+            }
+            if (player.changedMap_Left && !((Game1)Game).mapManager.miniMap.boolmaze[((Game1)Game).mapManager.currentRoom.Y, ((Game1)Game).mapManager.currentRoom.X - 1])
+            {
+                if (bossCheckingAux == 0)
+                    spawnBoss();
+                else
+                    SpawnEnemy();
+            }
+                
+            if (currentMapState)
+            {
+                bloodList.Clear();
             }
         }
 
@@ -292,7 +371,7 @@ namespace Collision
 
                     //Create the Sprite
                     enemyList[i].position = randposition;
-                } while (distance_between_points(randposition, player.GetPosition) <= FIELD_OF_VIEW && i > 0 || !enemyList[i].canSpawn);
+                } while (distance_between_points(randposition, player.GetPosition) <= FIELD_OF_VIEW + enemyList[i].frameSize.X && i > 0 || !enemyList[i].canSpawn);
                 
                 enemyHealthBarList.Add(new Bar(Vector2.Zero, ENEMY_HEALTHBAR_HEIGHT, enemyList[i].frameSize.X, 1, Color.Red, Color.DarkRed, 0));
                
@@ -406,7 +485,7 @@ namespace Collision
                 new Point(1, 1), 0, 13, 14, 1, this);
             piroca = new Sword(
                 piroca_texture, Vector2.Zero, new Point(piroca_texture.Width, piroca_texture.Height), new Point(0, 0),
-                new Point(1, 1), 0, 15, 16, 1, this);
+                new Point(1, 1), 0, 1, 1, 1, this);
             // UI
             levelSpriteUnit = new Sprite(number_texture, new Vector2(1350, 80), new Point(number_texture.Width/10, number_texture.Height),
                 new Point(0, 0), new Point(10, 1), 0.0f, 1f);
@@ -440,17 +519,12 @@ namespace Collision
             for (int i = 0; i < 2; i++)
                 enemyTypeList.Add(ogre);
 
-            //Big Size
+            //Boss Size
             troll = new Enemy(troll_texture, Vector2.Zero, new Point(troll_texture.Width, troll_texture.Height), new Point(0, 0), new Point(0, 0),
                 0.0f, 1f, this, TROLLWEIGHT, new Vector2(TROLLSPEED, TROLLSPEED), TROLLLIFE, TROLLLIFE, TROLLATTACKSPEED, TROLLATTACKRANGE, TROLLDAMAGE, TROLLXP, ((Game1)Game).mapManager);
-            for (int i = 0; i < 1; i++)
-                enemyTypeList.Add(troll);
             
-            //Boss Size
             baiacu = new Enemy(baiacu_texture, Vector2.Zero, new Point(baiacu_texture.Width, baiacu_texture.Height), new Point(0, 0), new Point(0, 0),
                 0.0f, 1f, this, BAIACUWEIGHT, new Vector2(BAIACUSPEED, BAIACUSPEED), BAIACULIFE, BAIACULIFE, BAIACUATTACKSPEED, BAIACUATTACKRANGE, BAIACUDAMAGE, BAIACUXP, ((Game1)Game).mapManager);
-            for (int i = 0; i < 1; i++)
-                enemyTypeList.Add(baiacu);
 
         }
 

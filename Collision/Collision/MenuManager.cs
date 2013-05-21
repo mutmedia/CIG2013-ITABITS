@@ -176,17 +176,20 @@ namespace Collision
                     addAgiButton.currentFrame.Y = 0;
                 if (addAgiButton.buttonPressed && agi < 33 && ((Game1)Game).spriteManager.player.statsToAdd > 0)
                 {
-                    ((Game1)Game).spriteManager.player.statsToAdd--;
                     agi++;
-                    ((Game1)Game).spriteManager.player.intSpeed++;
-                    ((Game1)Game).spriteManager.galho.attackspeed--;
-                    ((Game1)Game).spriteManager.cano.attackspeed--;
-                    ((Game1)Game).spriteManager.crayon.attackspeed--;
-                    ((Game1)Game).spriteManager.peixe.attackspeed--;
-                    ((Game1)Game).spriteManager.serra.attackspeed--;
-                    ((Game1)Game).spriteManager.piroca.attackspeed--;
-                    ((Game1)Game).spriteManager.jedi.attackspeed--;
-                    ((Game1)Game).spriteManager.currentSword.attackspeed--;
+                    if (agi % 3 == 0)
+                    {
+                        ((Game1)Game).spriteManager.player.intSpeed++;
+                        ((Game1)Game).spriteManager.galho.attackspeed--;
+                        ((Game1)Game).spriteManager.cano.attackspeed--;
+                        ((Game1)Game).spriteManager.crayon.attackspeed--;
+                        ((Game1)Game).spriteManager.peixe.attackspeed--;
+                        ((Game1)Game).spriteManager.serra.attackspeed--;
+                        ((Game1)Game).spriteManager.piroca.attackspeed--;
+                        ((Game1)Game).spriteManager.jedi.attackspeed--;
+                        ((Game1)Game).spriteManager.currentSword.attackspeed--;
+                    }
+                    ((Game1)Game).spriteManager.player.statsToAdd--;
                 }
 
                 if (addStrButton.buttonHovered && str < 33)
@@ -212,7 +215,7 @@ namespace Collision
                 {
                     ((Game1)Game).spriteManager.player.statsToAdd--;
                     vit++;
-                    ((Game1)Game).spriteManager.player.totalhp =(int)(((Game1)Game).spriteManager.player.totalhp*1.2);
+                    ((Game1)Game).spriteManager.player.totalhp =(int)(((Game1)Game).spriteManager.player.totalhp*1.14975699);
                     ((Game1)Game).spriteManager.player.hp = ((Game1)Game).spriteManager.player.totalhp;
                 }
 

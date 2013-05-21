@@ -39,6 +39,7 @@ namespace Collision
         public Point currentRoom;
         public int floorSize = 3;
         public bool mapCleared = true;
+        public int currentFloor = 0;
 
         public MapManager(Game game)
             : base(game)
