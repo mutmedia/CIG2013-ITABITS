@@ -11,6 +11,7 @@ namespace Collision
     public class Button: Sprite
     {
         MouseState oldMouseState;
+        bool buttonClickedFirstPart = false;
         
         public Button(Texture2D textureImage, Vector2 position, Point frameSize,
             Point currentFrame, Point sheetSize, float angle, float depth)
@@ -26,11 +27,28 @@ namespace Collision
                 MouseState mouseState = Mouse.GetState(); 
                 Rectangle mousePosition = new Rectangle(mouseState.X, mouseState.Y, 5, 5);
 
-                if (mousePosition.Intersects(buttonBounds) && mouseState.LeftButton == ButtonState.Pressed)
+                if (mousePosition.Intersects(buttonBounds))
                 {
-                    if (oldMouseState.LeftButton == ButtonState.Released)
+                    if (mouseState.LeftButton == ButtonState.Pressed)
                     {
-                        return true;
+                        if (oldMouseState.LeftButton == ButtonState.Released)
+                        {
+                            buttonClickedFirstPart = true;
+                        }
+                    }
+                }
+                if (buttonClickedFirstPart)
+                {
+                    if (mousePosition.Intersects(buttonBounds))
+                    {
+                        if (mouseState.LeftButton == ButtonState.Released)
+                        {
+                            if (oldMouseState.LeftButton == ButtonState.Pressed)
+                            {
+                                buttonClickedFirstPart = false;
+                                return true;
+                            }
+                        }
                     }
                 }
                 oldMouseState = mouseState;

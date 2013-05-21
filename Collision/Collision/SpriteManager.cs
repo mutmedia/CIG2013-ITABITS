@@ -22,6 +22,7 @@ namespace Collision
 
         public bool lastMapState = false;
         public bool currentMapState = false;
+        public bool newGame = true;
         
         public Player player;
 
@@ -41,8 +42,12 @@ namespace Collision
         public Sprite levelSpriteUnit;
         public Sprite levelSpriteDecimal;
         public Sprite levelUpSprite;
+        public Sprite aura;
+        public int auraFrametime = 7;
+        public int auraCurrentFrame = 0;
         public bool startLevelUpAnimation = false;
         public int levelupAnimationFrameTime = 4;
+        public bool playerLeveledUp = false;
 
         List<Enemy> enemyList = new List<Enemy>();
         List<Enemy> enemyTypeList = new List<Enemy>();
@@ -52,67 +57,61 @@ namespace Collision
         //ENEMY INFO
         int spawnWeight = 10;
         const int ENEMY_HEALTHBAR_HEIGHT = 10;
-
         
         //PORINGER
         Enemy poringer;
         Texture2D poringer_texture;
             const int PORINGERSPEED = 20;
-            const int PORINGERATTACKSPEED = 25;
-            const int PORINGERLIFE = 1;
-            const int PORINGERATTACKRANGE = 4;
+            const int PORINGERATTACKSPEED = 10;
+            const int PORINGERLIFE = 5;
+            const int PORINGERATTACKRANGE = 1;
             const int PORINGERDAMAGE = 1;
-            const int PORINGERXP = 10;
-            const int PORINGERWEIGHT = 10;
+            const int PORINGERXP = 1000000;
+            const int PORINGERWEIGHT = 100;
         //GOBLIN
         Enemy goblin;
         Texture2D goblin_texture;
-            const int GOBLINSPEED = 20;
-            const int GOBLINATTACKSPEED = 25;
-            const int GOBLINLIFE = 1;
-            const int GOBLINATTACKRANGE = 4;
-            const int GOBLINDAMAGE = 1;
-            const int GOBLINXP = 10;
-            const int GOBLINWEIGHT = 10;
+            const int GOBLINSPEED = 10;
+            const int GOBLINATTACKSPEED = 50;
+            const int GOBLINLIFE = 20;
+            const int GOBLINATTACKRANGE = 10;
+            const int GOBLINDAMAGE = 10;
+            const int GOBLINXP = 5;
+            const int GOBLINWEIGHT = 50;
         //OGRE
         Enemy ogre;
         Texture2D ogre_texture;
-            const int OGRESPEED = 6;
+            const int OGRESPEED = 5;
             const int OGREATTACKSPEED = 50;
-            const int OGRELIFE = 20;
-            const int OGREATTACKRANGE = 16;
-            const int OGREDAMAGE = 1;
+            const int OGRELIFE = 30;
+            const int OGREATTACKRANGE = 15;
+            const int OGREDAMAGE = 20;
             const int OGREXP = 10;
-            const int OGREWEIGHT = 10;
+            const int OGREWEIGHT = 100;
         //TROLL
         Enemy troll;
         Texture2D troll_texture;
-            const int TROLLSPEED = 1;
-            const int TROLLATTACKSPEED = 150;
-            const int TROLLLIFE = 2;
-            const int TROLLATTACKRANGE = 16;
-            const int TROLLDAMAGE = 10;
-            const int TROLLXP = 100;
-            const int TROLLWEIGHT = 10;
+            const int TROLLSPEED = 5;
+            const int TROLLATTACKSPEED = 100;
+            const int TROLLLIFE = 50;
+            const int TROLLATTACKRANGE = 8;
+            const int TROLLDAMAGE = 30;
+            const int TROLLXP = 20;
+            const int TROLLWEIGHT = 100;
         //BAIACU
         Enemy baiacu;
         Texture2D baiacu_texture;
-            const int BAIACUSPEED = 3;
-            const int BAIACUATTACKSPEED = 1;
-            const int BAIACULIFE = 200;
-            const int BAIACUATTACKRANGE = 4;
-            const int BAIACUDAMAGE = 10;
-            const int BAIACUXP = 50;
+            const int BAIACUSPEED = 400;
+            const int BAIACUATTACKSPEED = 10000;
+            const int BAIACULIFE = 1;
+            const int BAIACUATTACKRANGE = 500;
+            const int BAIACUDAMAGE = 1;
+            const int BAIACUXP = 50000;
             const int BAIACUWEIGHT = 10;
-
-        /* CALCULO DA VIDA DOS INIMIGOS 
-         * Um ataque com o meio da espada da 10 de dano
-         * e o com a ponta da 5, assim, o padrao de unidade
-         * de vida eh 10 */
-
+        
         //PLAYER INFO
-            const int PLAYERTOTALHP = 10000000;
-            const int XPTOLEVEL1 = 10;
+            const int PLAYERTOTALHP = 1000;
+            const int XPTOLEVEL1 = 20;
 
         const float FIELD_OF_VIEW = 500;
 
@@ -149,21 +148,22 @@ namespace Collision
 
         private void updateEnemyInteraction(GameTime gameTime)
         {
+            currentMapState = player.changedMap;
+            
             for (int i = 0; i < enemyList.Count; i++)
             {
                 Enemy enemy = enemyList[i];
                 Bar enemyHealthBar = enemyHealthBarList[i];
                 Vector2 position = enemy.GetPosition;
-                currentMapState = player.changedMap;
 
                 if (distance_between_points(enemy.GetPosition, currentSword.collisionPoint_middle) <= enemy.frameSize.X/2 && currentSword.getIsAttacking)
                 {
-                    enemy.hp -= currentSword.midDamage;
+                    enemy.hp -= (player.damage + currentSword.midDamage);
                 }
 
                 if (distance_between_points(enemy.GetPosition, currentSword.collisionPoint_tip) <= enemy.frameSize.X/2 && currentSword.getIsAttacking)
                 {
-                    enemy.hp -= currentSword.tipDamage;
+                    enemy.hp -= (player.damage + currentSword.tipDamage);
                 }
                 if (distance_between_points(enemy.GetPosition, player.GetPosition) <= player.frameSize.X/2 + enemy.frameSize.X/2 && enemy.GetIsAttacking)
                 {
@@ -189,12 +189,15 @@ namespace Collision
                   
             }
 
-            if (enemyList.Count == 0 || currentMapState)
-                SpawnEnemy();
-            if(currentMapState)
+            if (enemyList.Count() == 0)
+                ((Game1)Game).mapManager.miniMap.boolmaze[((Game1)Game).mapManager.currentRoom.X, ((Game1)Game).mapManager.currentRoom.Y] = true;
+
+            if( ((Game1)Game).mapManager.miniMap.boolmaze[((Game1)Game).mapManager.currentRoom.X, ((Game1)Game).mapManager.currentRoom.Y] && currentMapState)
                 bloodList.Clear();
-
-
+            if (currentMapState)
+            {
+                SpawnEnemy();
+            }
         }
 
         public void GameOverUpdate()
@@ -218,12 +221,13 @@ namespace Collision
         {
             Bar xpBar = playerXpBar;
 
-            if (player.xp >= player.xpToNextLevel)
+            if (player.xp >= player.xpToNextLevel && player.level < 99)
             {
                 player.xp -= player.xpToNextLevel;
-                //player.xpToNextLevel += 5;
-                player.totalhp += 10;
+
+                
                 player.level++;
+                player.statsToAdd++;
                 player.hp = player.totalhp;
                 if (player.level % 5 == 0 && player.level < 40)
                     currentSwordNum++;
@@ -327,7 +331,7 @@ namespace Collision
         public void UpdateLevelSprite()
         {
             levelSpriteUnit.currentFrame.X = player.level % 10;
-            levelSpriteDecimal.currentFrame.X = (int)(player.level / 10);
+            levelSpriteDecimal.currentFrame.X = (int)(player.level % 100 / 10);
         }
 
         public void LevelUpAnimationUpdate()
@@ -335,13 +339,13 @@ namespace Collision
             levelUpSprite.position = player.GetPosition;
             if (startLevelUpAnimation && time % levelupAnimationFrameTime == 0)
             {
-                
                 levelUpSprite.currentFrame.X = (levelUpSprite.currentFrame.X + 1) % levelUpSprite.sheetSize.X;
                 if (levelUpSprite.currentFrame.X == 0)
                 {
                     levelUpSprite.currentFrame.Y = (levelUpSprite.currentFrame.Y + 1) % levelUpSprite.sheetSize.Y;
                     if (levelUpSprite.currentFrame.Y == 0)
                     {
+                        playerLeveledUp = true;
                         startLevelUpAnimation = false;
                         levelUpSprite.currentFrame = new Point(0,0);
                     }
@@ -364,6 +368,7 @@ namespace Collision
             Texture2D piroca_texture = Game.Content.Load<Texture2D>(@"Images/sword/piroca");
             Texture2D number_texture = Game.Content.Load<Texture2D>(@"Images/UI/numberz");
             Texture2D levelup_texture = Game.Content.Load<Texture2D>(@"Images/levelup");
+            Texture2D aura_texture = Game.Content.Load<Texture2D>(@"Images/aura");
 
             ogre_texture = Game.Content.Load<Texture2D>(@"Images/Enemies/Ogre");
             troll_texture = Game.Content.Load<Texture2D>(@"Images/Enemies/Troll");
@@ -414,31 +419,38 @@ namespace Collision
             playerHealthBar = new Bar(new Vector2(20, 50), 60, 500, 1, Color.Red, Color.DarkRed, 1.3f);
             playerXpBar = new Bar(new Vector2(1400, 50), 60, 500, 1, Color.Green, Color.DarkGreen, 1.3f);
 
+            aura = new Sprite(aura_texture, Vector2.Zero, new Point(aura_texture.Width / 4, aura_texture.Height), new Point(0, 0), new Point(1, 4), 0.0f, -0.5f);
+
             //Enemies
+            //Very Small Size
+            poringer = new Enemy(poringer_texture, Vector2.Zero, new Point(poringer_texture.Width, poringer_texture.Height), new Point(0, 0), new Point(0, 0),
+                0.0f, 1f, this, PORINGERWEIGHT, new Vector2(PORINGERSPEED, PORINGERSPEED), PORINGERLIFE, PORINGERLIFE, PORINGERATTACKSPEED, PORINGERATTACKRANGE, PORINGERDAMAGE, PORINGERXP, ((Game1)Game).mapManager);
+            for (int i = 0; i < 10; i++)
+                enemyTypeList.Add(poringer);
+
+            //Small Size
+            goblin = new Enemy(goblin_texture, Vector2.Zero, new Point(goblin_texture.Width, goblin_texture.Height), new Point(0, 0), new Point(0, 0),
+                0.0f, 1f, this, GOBLINWEIGHT, new Vector2(GOBLINSPEED, GOBLINSPEED), GOBLINLIFE, GOBLINLIFE, GOBLINATTACKSPEED, GOBLINATTACKRANGE, GOBLINDAMAGE, GOBLINXP, ((Game1)Game).mapManager);
+            for (int i = 0; i < 5; i++)
+                enemyTypeList.Add(goblin);
+
+            //Medium Size
             ogre = new Enemy( ogre_texture, Vector2.Zero, new Point(ogre_texture.Width, ogre_texture.Height), new Point(0, 0), new Point(0,0),
                 0.0f, 1f, this, OGREWEIGHT, new Vector2(OGRESPEED, OGRESPEED), OGRELIFE, OGRELIFE, OGREATTACKSPEED, OGREATTACKRANGE, OGREDAMAGE, OGREXP, ((Game1)Game).mapManager);
-            for (int i = 0; i < 10; i++)
+            for (int i = 0; i < 2; i++)
                 enemyTypeList.Add(ogre);
 
+            //Big Size
             troll = new Enemy(troll_texture, Vector2.Zero, new Point(troll_texture.Width, troll_texture.Height), new Point(0, 0), new Point(0, 0),
                 0.0f, 1f, this, TROLLWEIGHT, new Vector2(TROLLSPEED, TROLLSPEED), TROLLLIFE, TROLLLIFE, TROLLATTACKSPEED, TROLLATTACKRANGE, TROLLDAMAGE, TROLLXP, ((Game1)Game).mapManager);
             for (int i = 0; i < 1; i++)
                 enemyTypeList.Add(troll);
-
-            poringer = new Enemy(poringer_texture, Vector2.Zero, new Point(poringer_texture.Width, poringer_texture.Height), new Point(0, 0), new Point(0, 0),
-                0.0f, 1f, this, PORINGERWEIGHT, new Vector2(PORINGERSPEED, PORINGERSPEED), PORINGERLIFE, PORINGERLIFE, PORINGERATTACKSPEED, PORINGERATTACKRANGE, PORINGERDAMAGE, PORINGERXP, ((Game1)Game).mapManager);
-            for (int i = 0; i < 100; i++)
-                enemyTypeList.Add(poringer);
-
+            
+            //Boss Size
             baiacu = new Enemy(baiacu_texture, Vector2.Zero, new Point(baiacu_texture.Width, baiacu_texture.Height), new Point(0, 0), new Point(0, 0),
                 0.0f, 1f, this, BAIACUWEIGHT, new Vector2(BAIACUSPEED, BAIACUSPEED), BAIACULIFE, BAIACULIFE, BAIACUATTACKSPEED, BAIACUATTACKRANGE, BAIACUDAMAGE, BAIACUXP, ((Game1)Game).mapManager);
-            for (int i = 0; i < 100; i++)
+            for (int i = 0; i < 1; i++)
                 enemyTypeList.Add(baiacu);
-
-            goblin = new Enemy(goblin_texture, Vector2.Zero, new Point(goblin_texture.Width, goblin_texture.Height), new Point(0, 0), new Point(0, 0),
-                0.0f, 1f, this, GOBLINWEIGHT, new Vector2(GOBLINSPEED, GOBLINSPEED), GOBLINLIFE, GOBLINLIFE, GOBLINATTACKSPEED, GOBLINATTACKRANGE, GOBLINDAMAGE, GOBLINXP, ((Game1)Game).mapManager);
-            for (int i = 0; i < 100; i++)
-                enemyTypeList.Add(goblin);
 
         }
 
@@ -449,6 +461,7 @@ namespace Collision
         public override void Initialize()
         {
             // TODO: Add your initialization code here
+            
             base.Initialize();
         }
 
@@ -458,9 +471,15 @@ namespace Collision
         /// <param name="gameTime">Provides a snapshot of timing values.</param>
         public override void Update(GameTime gameTime)
         {
-            if (!((Game1)Game).menuActive && !((Game1)Game).gameOver)
+            if (!((Game1)Game).menuActive && !((Game1)Game).gameOver && (!playerLeveledUp || !((Game1)Game).mapManager.miniMap.boolmaze[((Game1)Game).mapManager.currentRoom.X, ((Game1)Game).mapManager.currentRoom.Y]) && !((Game1)Game).menuManager.pauseMenuActive && !((Game1)Game).menuManager.statMenuActive)
             {
                 // TODO: Add your update code here
+                if (newGame)
+                {
+                    SpawnEnemy();
+                    newGame = false;
+                }
+                
                 time++;
                 
                 player.Update(gameTime, Game.Window.ClientBounds);
@@ -479,6 +498,14 @@ namespace Collision
 
                 if (player.hp <= 0)
                     ((Game1)Game).gameOver = true;
+                if (player.level == 99)
+                {
+                    aura.position = player.position;
+                    aura.angle += 0.4f;
+                    if (auraCurrentFrame % auraFrametime == 0)
+                        aura.currentFrame.X = ((aura.currentFrame.X + 1) % 4);
+                    auraCurrentFrame++;
+                }
 
 
                 base.Update(gameTime);
@@ -492,8 +519,8 @@ namespace Collision
         public override void Draw(GameTime gameTime)
         {
             spriteBatch.Begin(SpriteSortMode.FrontToBack, BlendState.AlphaBlend);
-            
-            if (!((Game1)Game).menuActive && !((Game1)Game).gameOver)
+
+            if (!((Game1)Game).menuActive && !((Game1)Game).gameOver && (!playerLeveledUp || !((Game1)Game).mapManager.miniMap.boolmaze[((Game1)Game).mapManager.currentRoom.X, ((Game1)Game).mapManager.currentRoom.Y]) && !((Game1)Game).menuManager.pauseMenuActive && !((Game1)Game).menuManager.statMenuActive)
             {
 
                 player.Draw(gameTime, spriteBatch);
@@ -518,6 +545,9 @@ namespace Collision
 
                 levelSpriteUnit.Draw(gameTime, spriteBatch);
                 levelSpriteDecimal.Draw(gameTime, spriteBatch);
+
+                if (player.level == 99)
+                    aura.Draw(gameTime, spriteBatch);
             }
 
             base.Draw(gameTime);

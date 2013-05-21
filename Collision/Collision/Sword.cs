@@ -16,7 +16,7 @@ namespace Collision
         SpriteManager spriteManager;
         bool isAttacking = false;
         int attackcounter = 0;
-        static int attackspeed = 20; //the lower the faster
+        public int attackspeed = 30; //the lower the faster
         public int tipDamage;
         public int midDamage;
 

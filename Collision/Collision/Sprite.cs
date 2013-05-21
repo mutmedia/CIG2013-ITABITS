@@ -17,7 +17,7 @@ namespace Collision
         public Point sheetSize;
         public Vector2 speed;
         public Vector2 position;
-        protected float angle;
+        public float angle;
         public float depth;
 
         public Sprite(Texture2D textureImage, Vector2 position, Point frameSize, Point currentFrame, Point sheetSize, Vector2 speed, float angle, float depth)

@@ -31,7 +31,6 @@ namespace Collision
             this.depth = depth;
         }
 
-
         public virtual void Draw(GameTime gameTime, SpriteBatch spriteBatch, GraphicsDevice graphicsDevice)
         {
             if (barTexture == null || backgroundTexture == null)

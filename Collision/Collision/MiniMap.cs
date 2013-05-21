@@ -8,7 +8,7 @@ using Microsoft.Xna.Framework.Input;
 
 namespace Collision
 {
-    class MiniMap
+    public class MiniMap
     {
         MapManager mapManager;
         Texture2D minimapTexture;
@@ -28,18 +28,23 @@ namespace Collision
             boolmaze = new bool[mapManager.floorSize, mapManager.floorSize];
 
             pixel = new Texture2D(graphicsDevice, 1, 1);
-
+            pixel.SetData(new[] { Color.Black });
 
             for (int i = 0; i < mapManager.floorSize; i++)
                 for (int j = 0; j < mapManager.floorSize; j++)
-                    boolmaze[i, j] = true;
-            boolmaze[mapManager.currentRoom.X, mapManager.currentRoom.Y] = true;
+                {
+                    if (mapManager.mapMatrix[i, j] == -11)
+                        boolmaze[i, j] = true;
+                    else
+                        boolmaze[i, j] = false;
+                }
+            visibleMap.Clear();
             visibleMap.Add(new Vector3(1700 + mapManager.currentRoom.X * minimapTexture.Width / 15, 800 + mapManager.currentRoom.Y * minimapTexture.Height, textureFrame));
         }
 
         public void Draw(GameTime gameTime, SpriteBatch spriteBatch)
         {
-            spriteBatch.Draw(pixel, new Vector2(1700, 800), new Rectangle(1700, 800, minimapTexture.Width * mapManager.floorSize/15, minimapTexture.Height * mapManager.floorSize), Color.Black, 0.0f, Vector2.Zero, 1f, SpriteEffects.None, 0.9f);
+            spriteBatch.Draw(pixel, new Vector2(1700, 800), new Rectangle(1700, 800, minimapTexture.Width * mapManager.floorSize/15, minimapTexture.Height * mapManager.floorSize), Color.White, 0.0f, Vector2.Zero, 1f, SpriteEffects.None, 0.9f);
             foreach(Vector3 item in visibleMap)
                 spriteBatch.Draw(minimapTexture, new Vector2(item.X, item.Y), new Rectangle((int)(item.Z * minimapTexture.Width / 15), 0, minimapTexture.Width / 15, minimapTexture.Height), Color.Gray, 0.0f, Vector2.Zero, 1f, SpriteEffects.None, 1f);
             spriteBatch.Draw(minimapTexture, new Vector2(1700 + mapManager.currentRoom.X * minimapTexture.Width/15, 800 + mapManager.currentRoom.Y * minimapTexture.Height), new Rectangle(textureFrame * minimapTexture.Width / 15, 0, minimapTexture.Width / 15, minimapTexture.Height), Color.White, 0.0f, Vector2.Zero, 1f, SpriteEffects.None, 1f);
@@ -80,7 +85,6 @@ namespace Collision
             else if (mapManager.mapMatrix[mapManager.currentRoom.Y, mapManager.currentRoom.X] == 210)
                 textureFrame = 0;
                 
-                boolmaze[mapManager.currentRoom.X, mapManager.currentRoom.Y] = true;
                 visibleMap.Add(new Vector3(1700 + mapManager.currentRoom.X * minimapTexture.Width/15, 800 + mapManager.currentRoom.Y * minimapTexture.Height, textureFrame));
         }
     }

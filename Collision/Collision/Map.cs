@@ -27,6 +27,7 @@ namespace Collision
         public const int VERTICAL_REPOSITION = 140;
         public const int HORIZONTAL_REPOSITION = 64;
         bool started = true;
+        public float portalAngle = 0;
         
 
         public Map(string textPath, Texture2D wallTile, Texture2D groundTile, Texture2D portalTile)
@@ -97,8 +98,9 @@ namespace Collision
             foreach (Rectangle r in wallCollisionRectangle)
                 spriteBatch.Draw(wallTile, r, Color.White);
             foreach (Rectangle r in portalRectangle)
-                spriteBatch.Draw(portalTile, r, Color.White);
+                spriteBatch.Draw(portalTile, new Vector2(r.X + r.Width/2, r.Y + r.Height/2), new Rectangle(0,0,r.Width, r.Height), Color.White, portalAngle, new Vector2(r.Width/2, r.Height/2), 1f, SpriteEffects.None, 0.0f);
 
+            
         }
 
 

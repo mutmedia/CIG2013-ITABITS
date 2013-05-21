@@ -10,7 +10,7 @@ namespace Collision
 {
     public class Player: Sprite
     {
-        public int intSpeed = 10;
+        public int intSpeed = 5;
         public int hp;
         public int totalhp;
         public int xp;
@@ -25,6 +25,8 @@ namespace Collision
         public bool changedMap_Down = false;
         public bool changedMap_Right = false;
         public bool changedMap_Left = false;
+        public int statsToAdd = 0;
+        public int damage = 0;
         
         
         public Player(Texture2D textureImage, Vector2 position, Point frameSize,
@@ -40,13 +42,16 @@ namespace Collision
             this.mapManager = mapManager;
         }
 
-        
-
         public bool canMoveUp
         {
             get
             {
                 foreach ( Rectangle r in mapManager.currentMap.wallCollisionRectangle)
+                {
+                    if (topCollisionRectangle.Intersects(r))
+                        return false;
+                }
+                foreach (Rectangle r in mapManager.currentMap.portalRectangle)
                 {
                     if (topCollisionRectangle.Intersects(r))
                         return false;
@@ -64,6 +69,11 @@ namespace Collision
                     if (downCollisionRectangle.Intersects(r))
                         return false;
                 }
+                foreach (Rectangle r in mapManager.currentMap.portalRectangle)
+                {
+                    if (downCollisionRectangle.Intersects(r))
+                        return false;
+                }
                 return true;
             }
         }
@@ -77,6 +87,11 @@ namespace Collision
                     if (leftCollisionRectangle.Intersects(r))
                         return false;
                 }
+                foreach (Rectangle r in mapManager.currentMap.portalRectangle)
+                {
+                    if (leftCollisionRectangle.Intersects(r))
+                        return false;
+                }
                 return true;
             }
         }
@@ -86,6 +101,11 @@ namespace Collision
             get
             {
                 foreach (Rectangle r in mapManager.currentMap.wallCollisionRectangle)
+                {
+                    if (rightCollisionRectangle.Intersects(r))
+                        return false;
+                }
+                foreach (Rectangle r in mapManager.currentMap.portalRectangle)
                 {
                     if (rightCollisionRectangle.Intersects(r))
                         return false;
@@ -120,22 +140,15 @@ namespace Collision
                 }
 
                 //Anda igual ao moller
-                //if (Keyboard.GetState().IsKeyDown(Keys.W))
+                //if (Mouse.GetState().MiddleButton == ButtonState.Pressed)
                 //{
                 //    inputDirection = new Vector2((float)Math.Cos((double)(angle - PI/2)), (float)Math.Sin((double)(angle - PI/2)));
                 //}
-                //if (Keyboard.GetState().IsKeyDown(Keys.S))
+                //if (Mouse.GetState().RightButton == ButtonState.Pressed)
                 //{
                 //    inputDirection = new Vector2((float)Math.Cos((double)(angle + PI/2)), (float)Math.Sin((double)(angle + PI/2)));
                 //}
-                //if (Keyboard.GetState().IsKeyDown(Keys.A))
-                //{
-                //    inputDirection = new Vector2((float)Math.Cos((double)(angle)), (float)Math.Sin((double)(angle)));
-                //}
-                //if (Keyboard.GetState().IsKeyDown(Keys.D))
-                //{
-                //    inputDirection = new Vector2((float)Math.Cos((double)(angle + PI)), (float)Math.Sin((double)(angle + PI)));
-                //}
+                
 
                 return inputDirection * intSpeed;
             }
@@ -145,31 +158,30 @@ namespace Collision
         {
             foreach (Rectangle r in mapManager.currentMap.portalRectangle)
             {
-                if (r.Intersects(topCollisionRectangle))
+                if (r.Intersects(topCollisionRectangle) && mapManager.miniMap.boolmaze[mapManager.currentRoom.X, mapManager.currentRoom.Y] && !spriteManager.startLevelUpAnimation)
                 {
                     position = new Vector2(position.X, (mapManager.currentMap.width - 2) * mapManager.currentMap.portalTile.Height + 140);
                     changedMap = true;
                     changedMap_Up = true;
                 }
-                if (r.Intersects(downCollisionRectangle))
+                if (r.Intersects(downCollisionRectangle) && mapManager.miniMap.boolmaze[mapManager.currentRoom.X, mapManager.currentRoom.Y] && !spriteManager.startLevelUpAnimation)
                 {
                     position = new Vector2(position.X, 2 * mapManager.currentMap.portalTile.Height + 140);
                     changedMap = true;
                     changedMap_Down = true;
                 }
-                if (r.Intersects(leftCollisionRectangle))
+                if (r.Intersects(leftCollisionRectangle) && mapManager.miniMap.boolmaze[mapManager.currentRoom.X, mapManager.currentRoom.Y] && !spriteManager.startLevelUpAnimation)
                 {
                     position = new Vector2((mapManager.currentMap.height - 2) * mapManager.currentMap.portalTile.Height + 64, position.Y);
                     changedMap = true;
                     changedMap_Left = true;
 
                 }
-                if (r.Intersects(rightCollisionRectangle))
+                if (r.Intersects(rightCollisionRectangle) && mapManager.miniMap.boolmaze[mapManager.currentRoom.X, mapManager.currentRoom.Y] && !spriteManager.startLevelUpAnimation)
                 {
                     position = new Vector2(2 * mapManager.currentMap.portalTile.Height + 64, position.Y);
                     changedMap = true;
                     changedMap_Right = true;
-
                 }
             }
         }

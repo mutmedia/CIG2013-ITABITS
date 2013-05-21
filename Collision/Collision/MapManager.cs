@@ -34,16 +34,48 @@ namespace Collision
         Map map105;
         Map map210;
         public Map currentMap;
-        MiniMap miniMap;
+        public MiniMap miniMap;
         public int[,] mapMatrix;
         public Point currentRoom;
-        public int floorSize = 15;
+        public int floorSize = 13;
+        public bool mapCleared = true;
 
         public MapManager(Game game)
             : base(game)
         {
             // TODO: Construct any child components here
         }
+
+
+        public void updateMapClearance()
+        {
+            mapCleared = true;
+            for (int i = 0; i < floorSize; i++)
+            {
+                for (int j = 0; j < floorSize; j++)
+                {
+                    mapCleared = mapCleared && miniMap.boolmaze[i,j];
+                }
+            }
+
+            if (mapCleared)
+            {
+                floorSize++;
+                generateMapMatrix();
+                if (floorSize % 2 == 0)
+                {
+                    currentRoom = new Point(floorSize / 2, floorSize / 2);
+                }
+                else
+                {
+                    currentRoom = new Point((floorSize - 1) / 2, (floorSize - 1) / 2);
+                }
+                ((Game1)Game).spriteManager.player.changedMap = true;
+                miniMap.Initialize(((Game1)Game).GraphicsDevice);
+            }
+
+        }
+        
 
         protected override void LoadContent()
         {
@@ -88,17 +120,6 @@ namespace Collision
             map210.Initialize();
 
             generateMapMatrix();
-
-            if (floorSize % 2 == 0)
-            {
-                currentRoom = new Point(floorSize / 2, floorSize / 2);
-            }
-            else
-            {
-                currentRoom = new Point((floorSize - 1) / 2, (floorSize - 1) / 2);
-            }
-
-            currentMap = map210;
 
             miniMap = new MiniMap(miniMapTexture, this);
 
@@ -232,6 +253,17 @@ namespace Collision
                     }
                 }
             }
+
+            if (floorSize % 2 == 0)
+            {
+                currentRoom = new Point(floorSize / 2, floorSize / 2);
+            }
+            else
+            {
+                currentRoom = new Point((floorSize - 1) / 2, (floorSize - 1) / 2);
+            }
+
+            currentMap = map210;
         }
 
         /// <summary>
@@ -252,6 +284,7 @@ namespace Collision
         /// <param name="gameTime">Provides a snapshot of timing values.</param>
         public override void Update(GameTime gameTime)
         {
+            
             if(((Game1)Game).spriteManager.player.changedMap_Up)
                 currentRoom.Y--;
             
@@ -300,6 +333,8 @@ namespace Collision
                     currentMap = map210;
             }
 
+            updateMapClearance();
+
             if (((Game1)Game).spriteManager.player.changedMap)
             {
                 miniMap.Update();
@@ -313,6 +348,11 @@ namespace Collision
             spriteBatch.Begin(SpriteSortMode.FrontToBack, BlendState.AlphaBlend);
 
             currentMap.Draw(gameTime, spriteBatch);
+
+            if (miniMap.boolmaze[currentRoom.X, currentRoom.Y] && !((Game1)Game).spriteManager.startLevelUpAnimation)
+            {
+                currentMap.portalAngle -= 0.25f;
+            }
 
             miniMap.Draw(gameTime, spriteBatch);
 

@@ -62,6 +62,7 @@ namespace Collision
             menuManager = new MenuManager(this);
             mapManager = new MapManager(this);
 
+
             Components.Add(mapManager);
             Components.Add(spriteManager);
             Components.Add(menuManager);
@@ -103,7 +104,7 @@ namespace Collision
         /// <param name="gameTime">Provides a snapshot of timing values.</param>
         protected override void Update(GameTime gameTime)
         {
-            if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.Escape))
+            if (Keyboard.GetState().IsKeyDown(Keys.P))
                 Exit();
 
             // TODO: Add your update logic here
@@ -130,7 +131,6 @@ namespace Collision
             mouseSprite.Draw(gameTime, spriteBatch);
 
             base.Draw(gameTime);
-
             spriteBatch.End();
         }
     }
