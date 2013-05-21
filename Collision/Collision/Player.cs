@@ -158,26 +158,26 @@ namespace Collision
         {
             foreach (Rectangle r in mapManager.currentMap.portalRectangle)
             {
-                if (r.Intersects(topCollisionRectangle) && mapManager.miniMap.boolmaze[mapManager.currentRoom.X, mapManager.currentRoom.Y] && !spriteManager.startLevelUpAnimation)
+                if (r.Intersects(topCollisionRectangle) && mapManager.miniMap.boolmaze[mapManager.currentRoom.Y, mapManager.currentRoom.X] && !spriteManager.startLevelUpAnimation)
                 {
                     position = new Vector2(position.X, (mapManager.currentMap.width - 2) * mapManager.currentMap.portalTile.Height + 140);
                     changedMap = true;
                     changedMap_Up = true;
                 }
-                if (r.Intersects(downCollisionRectangle) && mapManager.miniMap.boolmaze[mapManager.currentRoom.X, mapManager.currentRoom.Y] && !spriteManager.startLevelUpAnimation)
+                if (r.Intersects(downCollisionRectangle) && mapManager.miniMap.boolmaze[mapManager.currentRoom.Y, mapManager.currentRoom.X] && !spriteManager.startLevelUpAnimation)
                 {
                     position = new Vector2(position.X, 2 * mapManager.currentMap.portalTile.Height + 140);
                     changedMap = true;
                     changedMap_Down = true;
                 }
-                if (r.Intersects(leftCollisionRectangle) && mapManager.miniMap.boolmaze[mapManager.currentRoom.X, mapManager.currentRoom.Y] && !spriteManager.startLevelUpAnimation)
+                if (r.Intersects(leftCollisionRectangle) && mapManager.miniMap.boolmaze[mapManager.currentRoom.Y, mapManager.currentRoom.X] && !spriteManager.startLevelUpAnimation)
                 {
                     position = new Vector2((mapManager.currentMap.height - 2) * mapManager.currentMap.portalTile.Height + 64, position.Y);
                     changedMap = true;
                     changedMap_Left = true;
 
                 }
-                if (r.Intersects(rightCollisionRectangle) && mapManager.miniMap.boolmaze[mapManager.currentRoom.X, mapManager.currentRoom.Y] && !spriteManager.startLevelUpAnimation)
+                if (r.Intersects(rightCollisionRectangle) && mapManager.miniMap.boolmaze[mapManager.currentRoom.Y, mapManager.currentRoom.X] && !spriteManager.startLevelUpAnimation)
                 {
                     position = new Vector2(2 * mapManager.currentMap.portalTile.Height + 64, position.Y);
                     changedMap = true;

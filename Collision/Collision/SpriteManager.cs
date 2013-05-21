@@ -66,8 +66,8 @@ namespace Collision
             const int PORINGERLIFE = 5;
             const int PORINGERATTACKRANGE = 1;
             const int PORINGERDAMAGE = 1;
-            const int PORINGERXP = 1000000;
-            const int PORINGERWEIGHT = 100;
+            const int PORINGERXP = 10000;
+            const int PORINGERWEIGHT = 10;
         //GOBLIN
         Enemy goblin;
         Texture2D goblin_texture;
@@ -101,17 +101,17 @@ namespace Collision
         //BAIACU
         Enemy baiacu;
         Texture2D baiacu_texture;
-            const int BAIACUSPEED = 400;
-            const int BAIACUATTACKSPEED = 10000;
-            const int BAIACULIFE = 1;
-            const int BAIACUATTACKRANGE = 500;
-            const int BAIACUDAMAGE = 1;
-            const int BAIACUXP = 50000;
+            const int BAIACUSPEED = 1;
+            const int BAIACUATTACKSPEED = 150;
+            const int BAIACULIFE = 10000;
+            const int BAIACUATTACKRANGE = 13;
+            const int BAIACUDAMAGE = 80;
+            const int BAIACUXP = 0;
             const int BAIACUWEIGHT = 10;
-        
+
         //PLAYER INFO
             const int PLAYERTOTALHP = 1000;
-            const int XPTOLEVEL1 = 20;
+            const int XPTOLEVEL1 = 10;
 
         const float FIELD_OF_VIEW = 500;
 
@@ -190,11 +190,11 @@ namespace Collision
             }
 
             if (enemyList.Count() == 0)
-                ((Game1)Game).mapManager.miniMap.boolmaze[((Game1)Game).mapManager.currentRoom.X, ((Game1)Game).mapManager.currentRoom.Y] = true;
+                ((Game1)Game).mapManager.miniMap.boolmaze[((Game1)Game).mapManager.currentRoom.Y, ((Game1)Game).mapManager.currentRoom.X] = true;
 
-            if( ((Game1)Game).mapManager.miniMap.boolmaze[((Game1)Game).mapManager.currentRoom.X, ((Game1)Game).mapManager.currentRoom.Y] && currentMapState)
+            if( ((Game1)Game).mapManager.miniMap.boolmaze[((Game1)Game).mapManager.currentRoom.Y, ((Game1)Game).mapManager.currentRoom.X] && currentMapState)
                 bloodList.Clear();
-            if (currentMapState)
+            if (!((Game1)Game).mapManager.miniMap.boolmaze[((Game1)Game).mapManager.currentRoom.Y, ((Game1)Game).mapManager.currentRoom.X] && currentMapState)
             {
                 SpawnEnemy();
             }
@@ -471,7 +471,7 @@ namespace Collision
         /// <param name="gameTime">Provides a snapshot of timing values.</param>
         public override void Update(GameTime gameTime)
         {
-            if (!((Game1)Game).menuActive && !((Game1)Game).gameOver && (!playerLeveledUp || !((Game1)Game).mapManager.miniMap.boolmaze[((Game1)Game).mapManager.currentRoom.X, ((Game1)Game).mapManager.currentRoom.Y]) && !((Game1)Game).menuManager.pauseMenuActive && !((Game1)Game).menuManager.statMenuActive)
+            if (!((Game1)Game).menuActive && !((Game1)Game).gameOver && (!playerLeveledUp || !((Game1)Game).mapManager.miniMap.boolmaze[((Game1)Game).mapManager.currentRoom.Y, ((Game1)Game).mapManager.currentRoom.X]) && !((Game1)Game).menuManager.pauseMenuActive && !((Game1)Game).menuManager.statMenuActive)
             {
                 // TODO: Add your update code here
                 if (newGame)
@@ -520,7 +520,7 @@ namespace Collision
         {
             spriteBatch.Begin(SpriteSortMode.FrontToBack, BlendState.AlphaBlend);
 
-            if (!((Game1)Game).menuActive && !((Game1)Game).gameOver && (!playerLeveledUp || !((Game1)Game).mapManager.miniMap.boolmaze[((Game1)Game).mapManager.currentRoom.X, ((Game1)Game).mapManager.currentRoom.Y]) && !((Game1)Game).menuManager.pauseMenuActive && !((Game1)Game).menuManager.statMenuActive)
+            if (!((Game1)Game).menuActive && !((Game1)Game).gameOver && (!playerLeveledUp || !((Game1)Game).mapManager.miniMap.boolmaze[((Game1)Game).mapManager.currentRoom.Y, ((Game1)Game).mapManager.currentRoom.X]) && !((Game1)Game).menuManager.pauseMenuActive && !((Game1)Game).menuManager.statMenuActive)
             {
 
                 player.Draw(gameTime, spriteBatch);

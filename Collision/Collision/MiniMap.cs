@@ -37,6 +37,14 @@ namespace Collision
                         boolmaze[i, j] = true;
                     else
                         boolmaze[i, j] = false;
+                    if (mapManager.floorSize % 2 == 0)
+                    {
+                        boolmaze[mapManager.floorSize / 2, mapManager.floorSize / 2] = true;
+                    }
+                    else
+                    {
+                        boolmaze[(mapManager.floorSize - 1) / 2, (mapManager.floorSize - 1) / 2] = true;
+                    }
                 }
             visibleMap.Clear();
             visibleMap.Add(new Vector3(1700 + mapManager.currentRoom.X * minimapTexture.Width / 15, 800 + mapManager.currentRoom.Y * minimapTexture.Height, textureFrame));

@@ -37,7 +37,7 @@ namespace Collision
         public MiniMap miniMap;
         public int[,] mapMatrix;
         public Point currentRoom;
-        public int floorSize = 13;
+        public int floorSize = 3;
         public bool mapCleared = true;
 
         public MapManager(Game game)
@@ -70,6 +70,7 @@ namespace Collision
                 {
                     currentRoom = new Point((floorSize - 1) / 2, (floorSize - 1) / 2);
                 }
+                currentMap = map210;
                 ((Game1)Game).spriteManager.player.changedMap = true;
                 miniMap.Initialize(((Game1)Game).GraphicsDevice);
             }
@@ -333,12 +334,12 @@ namespace Collision
                     currentMap = map210;
             }
 
-            updateMapClearance();
-
             if (((Game1)Game).spriteManager.player.changedMap)
             {
                 miniMap.Update();
             }
+
+            updateMapClearance();
 
             base.Update(gameTime);
         }
@@ -349,7 +350,7 @@ namespace Collision
 
             currentMap.Draw(gameTime, spriteBatch);
 
-            if (miniMap.boolmaze[currentRoom.X, currentRoom.Y] && !((Game1)Game).spriteManager.startLevelUpAnimation)
+            if (miniMap.boolmaze[currentRoom.Y, currentRoom.X] && !((Game1)Game).spriteManager.startLevelUpAnimation)
             {
                 currentMap.portalAngle -= 0.25f;
             }
